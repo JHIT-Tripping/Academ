@@ -6,12 +6,18 @@
 //
 
 import SwiftUI
-import Charts
+
 struct SubjectDetailView: View {
     @Binding var sub: Subject
     @State private var displaySheet = false
     @State private var showAlert = false
     @ObservedObject var userData: UserData
+    let formatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return formatter
+    }()
+    @Environment(SystemManager.self) var systemManager: SystemManager
     var body: some View {
         
         NavigationStack {
@@ -20,9 +26,14 @@ struct SubjectDetailView: View {
                     TextField("Name",text:$sub.name)
                     HStack{
                         Text("No. of Assessments")
-                        TextField("Num",value:$sub.numOfAssessments, formatter: NumberFormatter())
+                        TextField("Num",value:$sub.numOfAssessments, formatter: formatter)
                     }
-                    if sub.assessmentArray(type: 1).count>1{
+                    HStack{
+                        Text("Overall Goal:")
+                        TextField("Percentage",value:$sub.targetMark,formatter: formatter)
+                        Text("%")
+                    }//overall goal
+                    if sub.assessments.map({$0.markAttained}).count>0{
                         NavigationLink{
                             SubjectOverallView(subje: $sub,userData: userData)
                         }label: {
@@ -32,7 +43,16 @@ struct SubjectDetailView: View {
                     if userData.haveCredits{
                         HStack{
                             Text("Credit")
-                            TextField("Hours",value: $sub.credits, formatter: NumberFormatter())
+                            TextField("Hours",value: $sub.credits, formatter: formatter)
+                        }
+                    }
+                    Toggle("Is calculated?", isOn: $sub.isCalculated)
+                    if !systemManager.systems.isEmpty{
+                        Picker("System", selection: $sub.customSystem){
+                            ForEach(systemManager.systems){system in
+                                Text(system.name).tag(system as GradeSystem?)
+                            }
+                            
                         }
                     }
                 }
@@ -40,9 +60,21 @@ struct SubjectDetailView: View {
                 Section(header: Text("Assessments")) {
                     List($sub.assessments,editActions:.all){$assessment in
                         NavigationLink(destination: AssessmentDetailView(assess: $assessment,userData: userData)){
-                            Text(assessment.name)
-                            Text("")
-                                .font(.caption)
+                            HStack{
+                                Text(assessment.name)
+                                Spacer()
+                                if assessment.examDone{
+                                    Text(String(format:"%.0f",assessment.percentage)+"%")
+                                }else if assessment.haveReminder{
+                                    Text(assessment.reminder, style: .relative)
+                                    if Date.now>assessment.reminder{
+                                        Text("ago")
+                                    }else{
+                                        Text("from now")
+                                    }
+                                }
+                            }
+                            
                         }
                     }
                     if !(sub.assessments.count >= sub.numOfAssessments){
@@ -56,52 +88,24 @@ struct SubjectDetailView: View {
                     
                 }
                 .listRowBackground(userData.themelists[userData.colorSelect].secondColor)
-                Section(header: Text("Subject trends (%)")){
-                    if sub.assessmentArray(type: 1).count <= 1 {
-                        Text("Track two or more scores to see your grades over time!")
-                            .foregroundColor(.gray)
-                    } else {
-                        Text("\(sub.name)")
-                            .listRowBackground(userData.themelists[userData.colorSelect].secondColor)
-                        Chart(sub.assessments, id: \.self) { assessment in
-                            if assessment.examDone{
-                                LineMark(x: .value("Assessment", assessment.name), y: .value("Mark", percentage(amount: assessment.markAttained, total: assessment.totalMarks)))
-                                    .foregroundStyle(.red)
-                                LineMark(x: .value("Assessment", assessment.name), y: .value("Mark", sub.targetMark),series: .value("blank", "smth"))
-                                    .foregroundStyle(.green)
-                                LineMark(x: .value("Assessment", assessment.name), y: .value("Mark", sub.currentOverall()),series: .value("blank", "ded"))
-                                    .foregroundStyle(Color(hex:"0096FF"))
-                            }
-                        }
-                        .listRowBackground(userData.themelists[userData.colorSelect].secondColor)
-                        .chartYScale(domain:0...100)
+                if sub.assessments.map({$0.markAttained}).count>0{
+                    Section(header: Text("Subject trends (%)")){
+                        GraphView(sub: sub, userData: userData)
                     }
-                    if sub.assessmentArray(type: 1).count > 1{
-                        HStack{
-                            Image(systemName: "circle.fill")
-                                .foregroundColor(.red)
-                            Text("Marks per WA")
-                            Text("        ")
-                            Image(systemName: "circle.fill")
-                                .foregroundColor(.green)
-                            Text("Goal marks")
-                            Text("  ")
-                            Image(systemName: "circle.fill")
-                                .foregroundColor(Color(hex:"0096FF"))
-                            Text("Overall marks")
-                        }
-                        .listRowBackground(userData.themelists[userData.colorSelect].secondColor)
-                    }
-                    
+                    .listRowBackground(userData.themelists[userData.colorSelect].secondColor)
                 }
-                .listRowBackground(userData.themelists[userData.colorSelect].secondColor)
             }
-            .background(userData.themelists[userData.colorSelect].mainColor)
-            .scrollContentBackground(userData.themelists[userData.colorSelect].hideBackground ? .hidden : .visible)
+            .background(.linearGradient(colors: userData.themelists[userData.colorSelect].mainColor, startPoint: .top, endPoint: .bottom))
+            .scrollContentBackground(.hidden)
             .navigationTitle($sub.name)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .topBarTrailing) {
                     EditButton()
+                        .padding(.trailing, 8)
+                        .background(userData.themelists[userData.colorSelect].secondColor)
+                        .mask{
+                            RoundedRectangle(cornerRadius: 10)
+                        }
                 }
             }
             .onAppear{
@@ -132,5 +136,6 @@ struct SubjectDetailView_Previews: PreviewProvider {
             Assessment(name: "WA3", weightage: 15, totalMarks: 45, examDone: true, markAttained: 37, examDate: Date(), haveReminder: false, reminder: Date()),
             Assessment(name: "EYE", weightage: 60, totalMarks: 120, examDone: false, markAttained: 0, examDate: Date(), haveReminder: true, reminder: Date())
         ], targetMark: 80, credits: 0, numOfAssessments: 4)),userData: UserData())
+        .environment(SystemManager())
     }
 }

@@ -11,68 +11,105 @@ struct SettingsView: View {
     //@State private var isLightTheme = true // true is for light mode
     @Environment(\.colorScheme) var colorScheme
     @ObservedObject var userData: UserData
-    @State private var hideBackground = false
     @State private var showAlert = false
     @State private var showSheet = false
     @EnvironmentObject var subjectmanager: SubjectManager
-    @EnvironmentObject var systemmanager: SystemManager
+    @Environment(SystemManager.self) var systemmanager: SystemManager
+    let formatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return formatter
+    }()
     var body: some View {
-        
+        @Bindable var systemmanager = systemmanager
         
         NavigationStack{
             
             Form {
                 Section("Grading system") {
-                    Picker("Grading System Type", selection: $userData.selection) {
-                        ForEach(systemmanager.getNames().indices, id: \.self) { index in
-                            Text(systemmanager.getNames()[index])
+                    Picker("Grading System Type", selection: $userData.gradeType) {
+                        
+                        // Enum cases
+                        ForEach(GradeType.allCases, id: \.self) { type in
+                            Text(type.rawValue).tag(type)
+                        }
+                        
+                    }
+                    .pickerStyle(.menu)
+                    .onChange(of: userData.gradeType){
+                        if userData.gradeType != .none {
+                            if let matchingSystem = defaultSystems.first(where: { !$0.isEmpty && userData.gradeType == $0[0].type }) {
+                                systemmanager.systems = matchingSystem
+                            } else {
+                                print("No matching system found")
+                                systemmanager.systems = [] // or handle this case appropriately
+                            }
+                        } else {
+                            systemmanager.systems = []
+                        }
+                        for i in subjectmanager.subjects.indices{
+                            subjectmanager.subjects[i].customSystem = nil
                         }
                     }
-                    .listRowBackground(userData.themelists[userData.colorSelect].secondColor)
-                    .pickerStyle(.menu)
+                    Toggle(isOn: $userData.haveCredits) {
+                        Text("Have credits?")
+                    }
+                    HStack{
+                        Text("Passing mark:")
+                        TextField("Mark", value: $userData.pass, formatter: formatter)
+                    }
                 }
-                if userData.selection == 1{
-                    Section("GPA Settings"){
-                        Toggle(isOn: $userData.haveCredits, label: {Text("Have credits?")})
-                        List($systemmanager.systems[0].grades){$grade in
-                            NavigationLink{
-                                GradeDetailView(grade: $grade,userData: userData)
+                .listRowBackground(userData.themelists[userData.colorSelect].secondColor)
+                if userData.gradeType != .none{
+                    if systemmanager.systems.isEmpty{
+                        Text("An error occurred")
+                            .onAppear(){
+                                if userData.gradeType != .none {
+                                    if let matchingSystem = defaultSystems.first(where: { !$0.isEmpty && userData.gradeType == $0[0].type }) {
+                                        systemmanager.systems = matchingSystem
+                                    } else {
+                                        print("No matching system found")
+                                        systemmanager.systems = [] // or handle this case appropriately
+                                    }
+                                } else {
+                                    systemmanager.systems = []
+                                }
+                            }
+                    }else{
+                        Section(header: Text("Systems"), footer: Text("The first system is the default")){
+                            List($systemmanager.systems, editActions: .all){$system in
+                                NavigationLink{
+                                    SystemDetailView(system: $system, userData: userData)
+                                }label: {
+                                    HStack{
+                                        Text(system.name)
+                                    }
+                                }
+                            }
+                            
+                            Button{
+                                showSheet = true
                             }label: {
-                                VStack(alignment: .leading){
-                                    Text(grade.name)
-                                    Text("Grade Point: \(String(format:"%.1f",grade.gradePoint))")
-                                        .foregroundColor(.gray)
-                                        .font(.system(size: 15))
+                                HStack{
+                                    Image(systemName: "plus")
+                                    Text("Add a system")
                                 }
                             }
                         }
-                        
-                        Button{
-                            showSheet = true
-                        }label: {
-                            HStack{
-                                Image(systemName: "plus")
-                                Text("Add a grade")
-                            }
+                        .sheet(isPresented: $showSheet){
+                            NewSystemView(userData: userData)
                         }
+                        .listRowBackground(userData.themelists[userData.colorSelect].secondColor)
                     }
-                    .sheet(isPresented: $showSheet){
-                        NewGradeView(userData: userData)
-                    }
-                    .listRowBackground(userData.themelists[userData.colorSelect].secondColor)
                 }
-                //                }else if userData.selection == 3{
-                //                    Section("AL settings"){
-                //
-                //                    }
-                //                }
                 
                 Section("Themes") {
                     Picker("Set Theme", selection: $userData.colorSelect) {
                         
                         if colorScheme == .light{
                             ForEach(userData.themelists.indices) { index in
-                                if userData.themelists[index].LightMode == true{
+                                if
+                                    userData.themelists[index].LightMode == true{
                                     Text(userData.themelists[index].themeName)
                                     
                                 }
@@ -100,7 +137,6 @@ struct SettingsView: View {
                     }
                 }
                 .listRowBackground(userData.themelists[userData.colorSelect].secondColor)
-                .navigationTitle("Settings")
                 .alert("Are you sure you want to reset to a new year?", isPresented: $showAlert){
                     Button("Confirm", role: .destructive){
                         subjectmanager.subjects = []
@@ -110,19 +146,28 @@ struct SettingsView: View {
                     Text("This cannot be undone.")
                 }
             }
-            
-            .background(userData.themelists[userData.colorSelect].mainColor)
-            .scrollContentBackground(userData.themelists[userData.colorSelect].hideBackground ? .hidden : .visible)
+            .navigationTitle("Settings")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    EditButton()
+                        .padding(.trailing, 8)
+                        .background(userData.themelists[userData.colorSelect].secondColor)
+                        .mask{
+                            RoundedRectangle(cornerRadius: 10)
+                        }
+                }
+            }
+            .background(.linearGradient(colors: userData.themelists[userData.colorSelect].mainColor, startPoint: .top, endPoint: .bottom))
+            .scrollContentBackground(.hidden)
         }
     }
-    
 }
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
         SettingsView(userData: UserData())
             .environmentObject(SubjectManager())
-            .environmentObject(SystemManager())
+            .environment(SystemManager())
         //.colorScheme(.dark)
     }
 }

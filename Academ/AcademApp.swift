@@ -26,39 +26,46 @@ class AppDelegate: NSObject, UNUserNotificationCenterDelegate, UIApplicationDele
 @main
 struct AcademApp: App {
     
-    
+    @State var systemManager = SystemManager()
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environmentObject(SubjectManager())
-                .environmentObject(SystemManager())
+                .environment(systemManager)
         }
     }
 }
 class UserData: ObservableObject{
-    @AppStorage("gradeType") var selection = 0
+    @AppStorage("gradeType") var gradeType = GradeType.none
     @AppStorage("gpaCredits") var haveCredits = false
-    @AppStorage("themes") var colorSelect = 3
-    
+    @AppStorage("passingGrade") var pass:Double = 50
+    @AppStorage("themes") var colorSelect = 0
     let themelists = [
-        themeColors(themeName: "Default", hideBackground: false, mainColor: .black, secondColor: Color(hex: "1c1c1e"), LightMode: false),
+        themeColors(themeName: "Dark", mainColor: [.black], secondColor: Color(hex: "121212"), LightMode: false),
         
-        themeColors(themeName: "Minty", hideBackground: true, mainColor: Color(hex: "165607"), secondColor: Color(hex: "2a6f21"), LightMode: false),
+        themeColors(themeName: "Emerald Green", mainColor: [Color(hex: "16271C")], secondColor: Color(hex: "1F332C"), LightMode: false),
         
-        themeColors(themeName: "Purple (Dark mode)", hideBackground: true, mainColor: Color(hex: "31004a"), secondColor: Color(hex: "4c00a4"), LightMode: false),
+        themeColors(themeName: "Velvet Purple", mainColor: [Color(hex: "210F29")], secondColor: Color(hex: "29132F"), LightMode: false),
         
-        themeColors(themeName: "Charcoal", hideBackground: true, mainColor: Color(hex: "101314"), secondColor: Color(hex: "36454f"), LightMode: false),
+        themeColors(themeName: "Charcoal", mainColor: [Color(hex: "101314")], secondColor: Color(hex: "36454f"), LightMode: false),
         
-        themeColors(themeName: "Light", hideBackground: true, mainColor: .white, secondColor: Color(hex: "f2f2f7"), LightMode: true),
+        themeColors(themeName: "Navy Blue", mainColor: [Color(hex: "181B3C")], secondColor: Color(hex: "1b1f46"), LightMode: false),
         
-        themeColors(themeName: "Beach", hideBackground: true, mainColor: Color(hex: "f5f5dc"), secondColor: Color(hex: "ffffff"), LightMode: true),
+        themeColors(themeName: "Crimson Red", mainColor: [Color(hex: "410611")], secondColor: Color(hex: "4B0714"), LightMode: false),
         
-        themeColors(themeName: "Winter", hideBackground: true, mainColor: Color(hex: "bddeec"), secondColor: Color(hex: "ffffff"), LightMode: true),
+        themeColors(themeName: "Midnight", mainColor: [Color(hex: "191970"), .black], secondColor: Color(hex: "121212"), LightMode: false),
         
-        themeColors(themeName: "Lemon", hideBackground: true, mainColor: Color(hex: "ffff9f"), secondColor: Color(hex: "ffffff"), LightMode: true),
+        themeColors(themeName: "Light", mainColor: [.white], secondColor: Color(hex: "f2f2f7"), LightMode: true),
         
-        themeColors(themeName: "Purple (Light mode)", hideBackground: true, mainColor: Color(hex: "d0bdf4"), secondColor: Color(hex: "ffffff"), LightMode: true),
-        themeColors(themeName: "Minty", hideBackground: true, mainColor: Color(hex: "E1F8DC"), secondColor: Color(hex: "ffffff"), LightMode: true),
+        themeColors(themeName: "Beach", mainColor: [Color(hex: "05c3dd"), Color(hex: "ecd379"), Color(hex: "ecd379")], secondColor: .white, LightMode: true),
+        
+        themeColors(themeName: "Winter", mainColor: [Color(hex: "bddeec"), Color(hex: "f2f2f7"), Color(hex: "f2f2f7")], secondColor: .white, LightMode: true),
+        
+        themeColors(themeName: "Lemon", mainColor: [Color(hex: "ffff9f")], secondColor: .white, LightMode: true),
+        
+        themeColors(themeName: "Lavender", mainColor: [Color(hex: "d0bdf4")], secondColor: .white, LightMode: true),
+        
+        themeColors(themeName: "Minty", mainColor: [Color(hex: "E1F8DC")], secondColor: .white, LightMode: true),
         
     ]
     

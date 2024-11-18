@@ -6,44 +6,12 @@
 //
 
 import SwiftUI
-import Charts
-struct ChartAssessment: Identifiable, Hashable {
-    var id = UUID()
-    var name: String
-    var mark: Int
-}
-struct DonutChartView: View {
-    var percentage: CGFloat
-    //    @EnvironmentObject var subjectmanager: SubjectManager
-    @ObservedObject var userData: UserData
-    @EnvironmentObject var systemmanager: SystemManager
-    var formattedResult: String {
-        return percentage.isNaN || percentage.isSignalingNaN ? "--" : systemmanager.gradeCalculate(mark: Double(percentage), formatt: "%.0f")
-    }
-    var body: some View {
-        
-        ZStack {
-            Circle()
-                .stroke(lineWidth: 6)
-                .opacity(0.3)
-                .foregroundColor(Color.gray)
-            
-            Circle()
-                .trim(from: 0.0, to: percentage / 100.0)
-                .stroke(style: StrokeStyle(lineWidth: 6, lineCap: .round, lineJoin: .round))
-                .foregroundColor(Color.accentColor)
-                .rotationEffect(Angle(degrees: -90))
-            Text("\(formattedResult)")
-            
-        }
-        
-    }
-}
+
 
 struct DashboardView: View {
     @EnvironmentObject var subjectmanager: SubjectManager
     @ObservedObject var userData: UserData
-    @EnvironmentObject var systemmanager: SystemManager
+    @Environment(SystemManager.self) var systemmanager: SystemManager
     var body: some View {
         NavigationStack{
             Form {
@@ -55,14 +23,18 @@ struct DashboardView: View {
                     }else{
                         ScrollView(.horizontal){
                             HStack {
-                                ForEach(subjectmanager.subjects.indices, id: \.self){ index in
-                                    VStack{
-                                        DonutChartView(percentage:CGFloat(subjectmanager.subjects[index].currentOverall()),userData:userData)
-                                            .frame(width: 70, height: 50)
-                                            .padding(4)
-                                        Text(subjectmanager.subjects[index].name)
+                                ForEach($subjectmanager.subjects){ $subject in
+                                    NavigationLink{
+                                        SubjectDetailView(sub:$subject,userData:userData)
+                                    }label:{
+                                        VStack{
+                                            DonutChartView(subject: subject, userData: userData, width: 6)
+                                                .frame(width: 70, height: 50)
+                                                .padding(4)
+                                            Text(subject.name)
+                                                .foregroundColor(.primary)
+                                        }
                                     }
-                                    
                                 }
                             }
                             
@@ -81,86 +53,14 @@ struct DashboardView: View {
                     .listRowBackground(userData.themelists[userData.colorSelect].secondColor)
                 }else{
                     ForEach($subjectmanager.subjects){ $subject in
-                        
-                        if subject.assessmentArray(type:1).count > 1 {
-                            // Text("\(subject.name) results")
-                            Section(subject == subjectmanager.subjects.first ? "Subjects" : "") {
-                                NavigationLink(destination: SubjectDetailView(sub: $subject,userData: userData)){
-                                    VStack{
-                                        Text("\(subject.name) mark trends")
-                                            .frame(maxWidth: .infinity, alignment: .leading)
-                                            .offset(y: 8)
-                                            .font(.title2)
-                                        ZStack{
-                                            Chart(subject.assessments) { assessment in
-                                                if assessment.examDone{
-                                                    LineMark(
-                                                        x: .value("Assessment", assessment.name),
-                                                        y: .value("Mark", percentage(amount: assessment.markAttained, total: assessment.totalMarks))
-                                                    )
-                                                    .foregroundStyle(.red)
-                                                }
-                                            }
-                                            Chart(subject.assessments) { assessment in
-                                                
-                                                
-                                                if assessment.examDone{
-                                                    LineMark(
-                                                        x: .value("Assessment", assessment.name),
-                                                        y: .value("Mark", subject.targetMark)
-                                                    )
-                                                    .foregroundStyle(.green)
-                                                }
-                                                
-                                            }
-                                            Chart(subject.assessments) { assessment in
-                                                
-                                                
-                                                if assessment.examDone{
-                                                    LineMark(
-                                                        x: .value("Assessment", assessment.name),
-                                                        y: .value("Mark", subject.currentOverall())
-                                                    )
-                                                }
-                                                
-                                                
-                                            }
-                                        }
-                                        
-                                        
-                                        
-                                        
-                                    }
-                                    .frame(width: 300, height: 200)
-                                    .chartYScale(domain:0...100)
-                                    
-                                }
-                                HStack{
-                                    Image(systemName: "circle.fill")
-                                        .foregroundColor(.red)
-                                    Text("WA marks")
-                                    Text("  ")
-                                    Image(systemName: "circle.fill")
-                                        .foregroundColor(.green)
-                                    Text("Goal marks")
-                                    Text("  ")
-                                    Image(systemName: "circle.fill")
-                                        .foregroundColor(Color(hex:"0096FF"))
-                                    Text("Overall marks")
-                                }
+                        Section{
+                            NavigationLink{
+                                SubjectDetailView(sub:$subject,userData:userData)
+                            }label: {
+                                GraphView(sub: subject, userData: userData)
                             }
-                            
-                            .listRowBackground(userData.themelists[userData.colorSelect].secondColor)
-                        } else {
-                            Section{
-                                NavigationLink(destination: SubjectDetailView(sub: $subject,userData: userData)){
-                                    Text("\(subject.name) needs at least two scores to see mark trends.")
-                                        .foregroundColor(.gray)
-                                }
-                            }
-                            .listRowBackground(userData.themelists[userData.colorSelect].secondColor)
-                            
                         }
+                        .listRowBackground(userData.themelists[userData.colorSelect].secondColor)
                     }
                     
                 }
@@ -169,8 +69,8 @@ struct DashboardView: View {
                 
                 
             }
-            .background(userData.themelists[userData.colorSelect].mainColor)
-            .scrollContentBackground(userData.themelists[userData.colorSelect].hideBackground ? .hidden : .visible)
+            .background(.linearGradient(colors: userData.themelists[userData.colorSelect].mainColor, startPoint: .top, endPoint: .bottom))
+            .scrollContentBackground(.hidden)
             .navigationTitle("Dashboard")
         }
     }
@@ -180,6 +80,6 @@ struct DashboardView_Previews: PreviewProvider {
     static var previews: some View {
         DashboardView(userData: UserData())
             .environmentObject(SubjectManager())
-            .environmentObject(SystemManager())
+            .environment(SystemManager())
     }
 }

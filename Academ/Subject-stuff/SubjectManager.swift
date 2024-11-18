@@ -19,59 +19,46 @@ class SubjectManager: ObservableObject {
         load()
     }
     
-    func compute(isTarget:Bool,userData:UserData)->Double{
-        var creditArray:[Int] = []
-        var gradePointArray:[Double] = []
-        var gradeCumulativePointArray:[Double] = []
-        var gradeCumulativePoint:Double = 0
-        var credit:Int = 0
-        var resultComputation = 0.0
-        if userData.selection>0{
-            for i in subjects{
-                if isTarget{
-                    gradePointArray.append(SystemManager().gradePointCalculate(mark: i.targetMark))
-                }else{
-                    gradePointArray.append(SystemManager().gradePointCalculate(mark: i.currentOverall()))
-                }
-                if userData.haveCredits{
-                    creditArray.append(i.credits)
-                }
+    func compute(isTarget: Bool, userData: UserData, systemManager: SystemManager) -> Double {
+        var gradePointArray: [Double] = []
+        var creditArray: [Int] = []
+        var weightedGradeSum: Double = 0
+        var totalCredits: Int = 0
+        var resultComputation: Double = 0.0
+        
+        // Iterate over subjects to populate grade points and credits
+        for subject in subjects where subject.isCalculated {
+            if userData.haveCredits {
+                creditArray.append(subject.credits)
             }
             
-            if userData.selection==1&&userData.haveCredits{
-                
-                for i in gradePointArray.indices{
-                    gradeCumulativePointArray.append(Double(creditArray[i])*gradePointArray[i])
-                }
-                for i in gradeCumulativePointArray{
-                    gradeCumulativePoint+=i
-                }
-                for i in creditArray{
-                    credit+=i
-                }
-                resultComputation = gradeCumulativePoint/Double(credit)
-                
-            }else if userData.selection==2{
-                for i in gradePointArray{
-                    gradeCumulativePoint+=i
-                }
-                resultComputation = gradeCumulativePoint/Double(gradePointArray.count)
-            }else if userData.selection==3{
-                for i in gradePointArray{
-                    gradeCumulativePoint+=i
-                }
-                resultComputation = gradeCumulativePoint
-            }else if userData.selection==8{
-                for i in gradePointArray{
-                    gradeCumulativePoint+=i
-                }
-                resultComputation = gradeCumulativePoint/Double(gradePointArray.count)
-            }else{
-                resultComputation = 0.0
-            }
-        }else{
-            resultComputation = 0.0
+            let gradePoint = isTarget
+            ? systemManager.gradePointCalculate(mark: subject.targetMark, userData: userData, customSys: subject.customSystem)
+            : systemManager.gradePointCalculate(mark: subject.currentOverall(), userData: userData, customSys: subject.customSystem)
+            
+            gradePointArray.append(userData.gradeType != .none ? gradePoint : (isTarget ? subject.targetMark : subject.currentOverall()))
         }
+        
+        // Calculate weighted or unweighted grade point average
+        if userData.haveCredits {
+            for (grade, credit) in zip(gradePointArray, creditArray) {
+                weightedGradeSum += grade * Double(credit)
+            }
+            totalCredits = creditArray.reduce(0, +)
+            if userData.gradeType == .GPA || userData.gradeType == .MSG{
+                resultComputation = totalCredits > 0 ? weightedGradeSum / Double(totalCredits) : 0.0
+            }else{
+                resultComputation = weightedGradeSum
+            }
+        } else {
+            weightedGradeSum = gradePointArray.reduce(0, +)
+            if userData.gradeType == .GPA || userData.gradeType == .MSG{
+                resultComputation = gradePointArray.count > 0 ? weightedGradeSum / Double(gradePointArray.count) : 0.0
+            }else{
+                resultComputation = weightedGradeSum
+            }
+        }
+        
         return resultComputation
     }
     func getArchiveURL() -> URL {
@@ -98,5 +85,3 @@ class SubjectManager: ObservableObject {
         }
     }
 }
-
-

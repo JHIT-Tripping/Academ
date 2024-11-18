@@ -4,7 +4,7 @@ extension Color {
     init(hex: String) {
         var cleanHexCode = hex.trimmingCharacters(in: .whitespacesAndNewlines)
         cleanHexCode = cleanHexCode.replacingOccurrences(of: "#", with: "")
-        print(cleanHexCode)
+        //print(cleanHexCode)
         var rgb: UInt64 = 0
         
         Scanner(string: cleanHexCode).scanHexInt64(&rgb)

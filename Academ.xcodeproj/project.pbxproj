@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		02C8FE9A2CEB4AD60028E715 /* NewSystemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C8FE992CEB4AD10028E715 /* NewSystemView.swift */; };
+		02C8FE9C2CEB4AF50028E715 /* SystemDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C8FE9B2CEB4AEE0028E715 /* SystemDetailView.swift */; };
+		02C8FE9E2CEB4B270028E715 /* GraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C8FE9D2CEB4B230028E715 /* GraphView.swift */; };
+		02C8FEA02CEB4B9C0028E715 /* DonutChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C8FE9F2CEB4B980028E715 /* DonutChartView.swift */; };
 		89564A8C2B0B013100BB0BA6 /* NewAssessmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89564A8B2B0B013100BB0BA6 /* NewAssessmentView.swift */; };
 		89564A8E2B0B4A4000BB0BA6 /* AssessmentDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89564A8D2B0B4A4000BB0BA6 /* AssessmentDetailView.swift */; };
 		89FD18E02B0871190054609D /* SubjectDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89FD18DF2B0871190054609D /* SubjectDetailView.swift */; };
@@ -48,6 +52,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		02C8FE992CEB4AD10028E715 /* NewSystemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSystemView.swift; sourceTree = "<group>"; };
+		02C8FE9B2CEB4AEE0028E715 /* SystemDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemDetailView.swift; sourceTree = "<group>"; };
+		02C8FE9D2CEB4B230028E715 /* GraphView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphView.swift; sourceTree = "<group>"; };
+		02C8FE9F2CEB4B980028E715 /* DonutChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonutChartView.swift; sourceTree = "<group>"; };
 		8946E0322B0DB6D600445833 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		89564A8B2B0B013100BB0BA6 /* NewAssessmentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAssessmentView.swift; sourceTree = "<group>"; };
 		89564A8D2B0B4A4000BB0BA6 /* AssessmentDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssessmentDetailView.swift; sourceTree = "<group>"; };
@@ -108,6 +116,7 @@
 				D976BE222B0AFD95005899C4 /* NewSubjectView.swift */,
 				89FD18DF2B0871190054609D /* SubjectDetailView.swift */,
 				89564A8D2B0B4A4000BB0BA6 /* AssessmentDetailView.swift */,
+				02C8FE9D2CEB4B230028E715 /* GraphView.swift */,
 				89564A8B2B0B013100BB0BA6 /* NewAssessmentView.swift */,
 				89FD18E12B0871340054609D /* SubjectOverallView.swift */,
 				D96546A02B0870AE00FEA173 /* SubjectManager.swift */,
@@ -120,9 +129,11 @@
 			children = (
 				D93ABAFE2B10752700A396FD /* SystemManager.swift */,
 				D965469A2B08478F00FEA173 /* SettingsView.swift */,
+				02C8FE9B2CEB4AEE0028E715 /* SystemDetailView.swift */,
 				D9838A372B11AD4D0023AC18 /* HexCode.swift */,
 				D93ABB042B107CB200A396FD /* GradeDetailView.swift */,
 				D93ABB022B1079F100A396FD /* NewGradeView.swift */,
+				02C8FE992CEB4AD10028E715 /* NewSystemView.swift */,
 			);
 			path = "Grading-stuff";
 			sourceTree = "<group>";
@@ -155,6 +166,7 @@
 				D965469E2B086D6900FEA173 /* Model.swift */,
 				D9D44DB02AC97FA20093096A /* ContentView.swift */,
 				D965469C2B0847B900FEA173 /* DashboardView.swift */,
+				02C8FE9F2CEB4B980028E715 /* DonutChartView.swift */,
 				D93ABB062B10843300A396FD /* Grading-stuff */,
 				89FD18E32B0871970054609D /* Subject-stuff */,
 				D9D44DB22AC97FA50093096A /* Assets.xcassets */,
@@ -253,7 +265,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1420;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					D9D44DAA2AC97FA20093096A = {
 						CreatedOnToolsVersion = 14.2;
@@ -319,6 +331,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02C8FE9A2CEB4AD60028E715 /* NewSystemView.swift in Sources */,
 				D93ABAFF2B10752700A396FD /* SystemManager.swift in Sources */,
 				D93ABB032B1079F100A396FD /* NewGradeView.swift in Sources */,
 				D9D44DB12AC97FA20093096A /* ContentView.swift in Sources */,
@@ -328,13 +341,16 @@
 				89FD18E22B0871340054609D /* SubjectOverallView.swift in Sources */,
 				D9D44DAF2AC97FA20093096A /* AcademApp.swift in Sources */,
 				D9838A382B11AD4D0023AC18 /* HexCode.swift in Sources */,
+				02C8FEA02CEB4B9C0028E715 /* DonutChartView.swift in Sources */,
 				D965469F2B086D6900FEA173 /* Model.swift in Sources */,
 				D96546A12B0870AE00FEA173 /* SubjectManager.swift in Sources */,
 				D965469B2B08478F00FEA173 /* SettingsView.swift in Sources */,
 				89564A8E2B0B4A4000BB0BA6 /* AssessmentDetailView.swift in Sources */,
+				02C8FE9C2CEB4AF50028E715 /* SystemDetailView.swift in Sources */,
 				D93ABB052B107CB200A396FD /* GradeDetailView.swift in Sources */,
 				D96546992B08476D00FEA173 /* SubjectsView.swift in Sources */,
 				89564A8C2B0B013100BB0BA6 /* NewAssessmentView.swift in Sources */,
+				02C8FE9E2CEB4B270028E715 /* GraphView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -408,6 +424,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -469,6 +486,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -507,13 +525,13 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.swiftinsg.2023;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -547,13 +565,13 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = org.swiftinsg.2023.Academ;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -569,7 +587,6 @@
 		D9D44DD42AC97FA60093096A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -588,7 +605,6 @@
 		D9D44DD52AC97FA60093096A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -607,7 +623,6 @@
 		D9D44DD72AC97FA60093096A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
@@ -624,7 +639,6 @@
 		D9D44DD82AC97FA60093096A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;

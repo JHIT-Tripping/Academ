@@ -1,4 +1,3 @@
-
 import SwiftUI
 
 struct AssessmentDetailView: View {
@@ -7,6 +6,11 @@ struct AssessmentDetailView: View {
     @State var NotificationSet =  true
     @ObservedObject var userData: UserData
     @State private var showAlert = false
+    let formatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return formatter
+    }()
     // all data has to be binding or else it would refresh
     func requestNotificationAuthorization() {
         let center = UNUserNotificationCenter.current()
@@ -58,7 +62,7 @@ struct AssessmentDetailView: View {
                     //TextField()
                     HStack{
                         Text("Weightage:")
-                        TextField("Percentage", value: $assess.weightage, formatter: NumberFormatter())
+                        TextField("Percentage", value: $assess.weightage, formatter: formatter)
                         Text("%")
                         
                         
@@ -70,11 +74,11 @@ struct AssessmentDetailView: View {
                     //                    }
                     HStack {
                         Text("Total marks:")
-                        TextField("Marks", value: $assess.totalMarks, formatter: NumberFormatter())
-                            .onChange(of: assess.totalMarks) { newValue in
-                                if let value = Int?(Int(newValue)), value < Int(assess.markAttained) || value <= 0 {
+                        TextField("Marks", value: $assess.totalMarks, formatter: formatter)
+                            .onChange(of: assess.totalMarks) { oldValue, newValue in
+                                if let value = Double?(newValue), value < assess.markAttained || value <= 0 {
                                     
-                                    assess.totalMarks = assess.markAttained + 1
+                                    assess.totalMarks = oldValue
                                     //     .foregroundColor(.red)
                                 }
                             }
@@ -90,7 +94,7 @@ struct AssessmentDetailView: View {
                     if assess.examDone {
                         HStack{
                             Text("Marks attained:")
-                            TextField("Marks", value: $assess.markAttained, formatter: NumberFormatter())
+                            TextField("Marks", value: $assess.markAttained, formatter: formatter)
                             //Text($totaledMarks)
                         }
                     } else{
@@ -106,7 +110,7 @@ struct AssessmentDetailView: View {
                                 Text("")
                             }
                         }
-                        .onChange(of: assess.haveReminder) {newValue in
+                        .onChange(of: assess.haveReminder) {
                             //                        requestNotificationAuthorization()
                             scheduleNotification(at: assess.reminder, body: "Your exam is on \(assess.examDate)", title: assess.name)
                         }
@@ -118,8 +122,8 @@ struct AssessmentDetailView: View {
                 }
                 .listRowBackground(userData.themelists[userData.colorSelect].secondColor)
             }
-            .background(userData.themelists[userData.colorSelect].mainColor)
-            .scrollContentBackground(userData.themelists[userData.colorSelect].hideBackground ? .hidden : .visible)
+            .background(.linearGradient(colors: userData.themelists[userData.colorSelect].mainColor, startPoint: .top, endPoint: .bottom))
+            .scrollContentBackground(.hidden)
             .navigationTitle($assess.name)
             //            .background(.green)
             //            .scrollContentBackground(.hidden)
@@ -135,4 +139,3 @@ struct AssessmentDetailView_Previews: PreviewProvider {
         
     }
 }
-

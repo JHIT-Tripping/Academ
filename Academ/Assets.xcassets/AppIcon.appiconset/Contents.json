@@ -1,7 +1,31 @@
 {
   "images" : [
     {
-      "filename" : "iOS Icon.png",
+      "filename" : "acadamame.png",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "size" : "1024x1024"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "acadamamedark.png",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "size" : "1024x1024"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "tinted"
+        }
+      ],
+      "filename" : "acadamametinted.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"

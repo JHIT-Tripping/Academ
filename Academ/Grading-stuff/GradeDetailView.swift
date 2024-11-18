@@ -10,32 +10,40 @@ import SwiftUI
 struct GradeDetailView: View {
     @Binding var grade: Grade
     @ObservedObject var userData: UserData
+    let formatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return formatter
+    }()
     var body: some View {
-        Form{
-            Section("Grade Info"){
-                TextField("Name", text: $grade.name)
-                HStack{
-                    Text("Min. Mark:")
-                    TextField("Number",value: $grade.minMark, formatter: NumberFormatter())
+        NavigationStack{
+            Form{
+                Section("Grade Info"){
+                    TextField("Name", text: $grade.name)
+                    HStack{
+                        Text("Min. Mark:")
+                        TextField("Number",value: $grade.minMark, formatter: formatter)
+                    }
+                    HStack{
+                        Text("Max. Mark:")
+                        TextField("Number",value: $grade.maxMark, formatter: formatter)
+                    }
+                    HStack{
+                        Text("Grade Point:")
+                        TextField("Number",value: $grade.gradePoint, formatter: formatter)
+                    }
                 }
-                HStack{
-                    Text("Max. Mark:")
-                    TextField("Number",value: $grade.maxMark, formatter: NumberFormatter())
-                }
-                HStack{
-                    Text("Grade Point:")
-                    TextField("Number",value: $grade.gradePoint, formatter: NumberFormatter())
-                }
+                .listRowBackground(userData.themelists[userData.colorSelect].secondColor)
             }
-            .listRowBackground(userData.themelists[userData.colorSelect].secondColor)
+            .background(.linearGradient(colors: userData.themelists[userData.colorSelect].mainColor, startPoint: .top, endPoint: .bottom))
+            .scrollContentBackground(.hidden)
+            .navigationTitle(grade.name)
         }
-        .background(userData.themelists[userData.colorSelect].mainColor)
-        .scrollContentBackground(userData.themelists[userData.colorSelect].hideBackground ? .hidden : .visible)
     }
 }
 
 struct GradeDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        GradeDetailView(grade: .constant(Grade(name: "A", minMark: 80, maxMark:100 , gradePoint: 4.0)),userData: UserData())
+        GradeDetailView(grade: .constant(Grade(name: "A", minMark: 80, maxMark:100 , gradePoint: 4.0)), userData: UserData())
     }
 }

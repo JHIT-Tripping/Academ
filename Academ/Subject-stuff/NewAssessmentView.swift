@@ -35,6 +35,11 @@ struct NewAssessmentView: View {
     @State private var markCheck:Double = 0.0
     @State var NotificationSet =  true
     @ObservedObject var userData: UserData
+    let formatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return formatter
+    }()
     func scheduleNotification(at date: Date, body: String, title: String) {
         
         requestNotificationAuthorization()
@@ -72,14 +77,14 @@ struct NewAssessmentView: View {
                 //TextField()
                 HStack{
                     Text("Weightage:")
-                    TextField("Percentage", value: $newAssessment.weightage, formatter: NumberFormatter())
+                    TextField("Percentage", value: $newAssessment.weightage, formatter: formatter)
                     Text("%")
                     
                     
                 }
                 HStack{
                     Text("Total marks:")
-                    TextField("Marks", value: $newAssessment.totalMarks, formatter: NumberFormatter())
+                    TextField("Marks", value: $newAssessment.totalMarks, formatter: formatter)
                     
                 }
                 
@@ -93,7 +98,7 @@ struct NewAssessmentView: View {
                 if newAssessment.examDone {
                     HStack{
                         Text("Marks attained:")
-                        TextField("Marks", value: $newAssessment.markAttained, formatter: NumberFormatter())
+                        TextField("Marks", value: $newAssessment.markAttained, formatter: formatter)
                     }
                 } else{
                     DatePicker(
@@ -148,8 +153,8 @@ struct NewAssessmentView: View {
             }
             .listRowBackground(userData.themelists[userData.colorSelect].secondColor)
         }
-        .background(userData.themelists[userData.colorSelect].mainColor)
-        .scrollContentBackground(userData.themelists[userData.colorSelect].hideBackground ? .hidden : .visible)
+        .background(.linearGradient(colors: userData.themelists[userData.colorSelect].mainColor, startPoint: .top, endPoint: .bottom))
+        .scrollContentBackground(.hidden)
         .alert("The weightage of all assessments in a subject can only be 100%",isPresented: $alert1){
             
         }
@@ -172,5 +177,4 @@ struct NewAssessmentView_Previews: PreviewProvider {
         
     }
 }
-
 

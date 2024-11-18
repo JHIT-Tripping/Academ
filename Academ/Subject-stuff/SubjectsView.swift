@@ -10,56 +10,84 @@ import SwiftUI
 struct SubjectsView: View {
     @EnvironmentObject var settings: SubjectManager
     @ObservedObject var userData: UserData
-    @EnvironmentObject var systemmanager: SystemManager
+    @Environment(SystemManager.self) var systemmanager: SystemManager
     @State private var displaySheet = false
+    @State private var isFormatted = false
     var body: some View {
         NavigationStack{
             
             Form{
                 Section{
-                    
-                    if userData.selection==1&&userData.haveCredits{
+                    if settings.subjects.count == 0 {
+                        Text("No subjects")
+                            .foregroundColor(.gray)
                         
-                        HStack{
-                            Text("Target GPA")
-                            Text(String(format:"%.2f",settings.compute(isTarget: true,userData:userData)))
-                        }
-                        HStack{
-                            Text("Current GPA")
-                            Text(String(format:"%.2f",settings.compute(isTarget: false,userData:userData)))
+                    }else{
+                        ScrollView(.horizontal){
+                            HStack {
+                                ForEach($settings.subjects){ $subject in
+                                    if !subject.assessments.map({$0.markAttained}).isEmpty{
+                                        NavigationLink{
+                                            SubjectDetailView(sub:$subject,userData:userData)
+                                        }label:{
+                                            VStack{
+                                                DonutChartView(subject: subject, userData: userData, width: 6)
+                                                    .frame(width: 70, height: 50)
+                                                    .padding(4)
+                                                Text(subject.name)
+                                                    .foregroundColor(.primary)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            
                         }
                         
-                    }else if userData.selection==2{
-                        HStack{
-                            Text("Target MSG")
-                            Text(String(format:"%.2f",settings.compute(isTarget: true,userData:userData)))
-                        }
-                        HStack{
-                            Text("Current MSG")
-                            Text(String(format:"%.2f",settings.compute(isTarget: false,userData:userData)))
-                        }
-                    }else if userData.selection==3{
-                        HStack{
-                            Text("Target AL")
-                            Text(String(format:"%.0f",settings.compute(isTarget: true,userData:userData)))
-                        }
-                        HStack{
-                            Text("Current AL")
-                            Text(String(format:"%.0f",settings.compute(isTarget: false,userData:userData)))
-                        }
-                    }else if userData.selection==8{
-                        HStack{
-                            Text("Target MAG")
-                            Text(systemmanager.MSGtoMAG(msg: settings.compute(isTarget: true,userData:userData)))
-                        }
-                        HStack{
-                            Text("Current MAG")
-                            Text(systemmanager.MSGtoMAG(msg:settings.compute(isTarget: false,userData:userData)))
-                        }
+                        .cornerRadius(4)
                     }
-                    
                 }
                 .listRowBackground(userData.themelists[userData.colorSelect].secondColor)
+                if !settings.subjects.isEmpty{
+                    Section(content:{
+                        HStack {
+                            Text("Target")
+                            Spacer()
+                            if isFormatted {
+                                Text(systemmanager.gradeCalculateFromPoint(
+                                    point: settings.compute(isTarget: true, userData: userData, systemManager: systemmanager),
+                                    formatt: "%.2f",
+                                    userData: userData, customSys: nil
+                                ))
+                            } else {
+                                Text(String(format: "%.2f", settings.compute(isTarget: true, userData: userData, systemManager: systemmanager)))
+                            }
+                        }
+                        HStack {
+                            Text("Current")
+                            Spacer()
+                            if isFormatted {
+                                Text(systemmanager.gradeCalculateFromPoint(
+                                    point: settings.compute(isTarget: false, userData: userData, systemManager: systemmanager),
+                                    formatt: "%.2f",
+                                    userData: userData, customSys: nil
+                                ))
+                            } else {
+                                Text(String(format: "%.2f", settings.compute(isTarget: false, userData: userData, systemManager: systemmanager)))
+                            }
+                        }
+                        
+                        
+                    }, footer: {
+                        if userData.gradeType == .GPA || userData.gradeType == .MSG{
+                            Button("Toggle formatting"){
+                                isFormatted.toggle()
+                            }
+                            .font(.footnote)
+                        }
+                    })
+                    .listRowBackground(userData.themelists[userData.colorSelect].secondColor)
+                }
                 Section{
                     if settings.subjects.count == 0 {
                         Text("No subjects")
@@ -69,7 +97,13 @@ struct SubjectsView: View {
                             NavigationLink{
                                 SubjectDetailView(sub:$subject,userData: userData)
                             }label:{
-                                Text(subject.name)
+                                HStack{
+                                    Text(subject.name)
+                                    if subject.assessments.map({$0.markAttained}).count>0{
+                                        Spacer()
+                                        Text(String(format: "%.0f",subject.currentOverall())+"%")
+                                    }
+                                }
                             }
                             .listRowBackground(userData.themelists[userData.colorSelect].secondColor)
                         }
@@ -77,22 +111,27 @@ struct SubjectsView: View {
                 }
                 .listRowBackground(userData.themelists[userData.colorSelect].secondColor)
             }
-            .background(userData.themelists[userData.colorSelect].mainColor)
-            .scrollContentBackground(userData.themelists[userData.colorSelect].hideBackground ? .hidden : .visible)
+            .background(.linearGradient(colors: userData.themelists[userData.colorSelect].mainColor, startPoint: .top, endPoint: .bottom))
+            .scrollContentBackground(.hidden)
             .navigationTitle("Subjects")
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem(placement: .navigationBarTrailing){
-                    Button{
-                        displaySheet = true
-                    } label: {
-                        Image(systemName: "plus")
-                        
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    HStack{
+                        EditButton()
+                        Button{
+                            displaySheet = true
+                        } label: {
+                            Image(systemName: "plus")
+                            
+                        }
                     }
-                    
+                    .padding(.trailing, 8)
+                    .background(userData.themelists[userData.colorSelect].secondColor)
+                    .mask{
+                        RoundedRectangle(cornerRadius: 10)
+                    }
                 }
+                
             }
             .sheet(isPresented: $displaySheet) {
                 NewSubjectView(userData: userData)
@@ -112,6 +151,6 @@ struct SubjectsView_Previews: PreviewProvider {
     static var previews: some View {
         SubjectsView(userData: UserData())
             .environmentObject(SubjectManager())
-            .environmentObject(SystemManager())
+            .environment(SystemManager())
     }
 }
