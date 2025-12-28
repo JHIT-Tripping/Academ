@@ -23,7 +23,7 @@ struct NewSubjectView: View {
     var body: some View {
         NavigationStack {
             AForm{
-                Section("SUBJECT INFO") {
+                Section("Subject Info") {
                     TextField("Subject", text:$newSubject.name)
                     HStack{
                         Text("Overall Goal")
@@ -64,7 +64,7 @@ struct NewSubjectView: View {
                     //                    }
                 }
                 .lrb(themeSelect)
-                Section("ASSESSMENTS") {
+                Section("Assessments") {
                     List($newSubject.assessments){$assessm in
                         NavigationLink{
                             AssessmentDetailView(assess: $assessm)

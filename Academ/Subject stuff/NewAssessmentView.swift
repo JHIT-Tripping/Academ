@@ -102,9 +102,22 @@ struct NewAssessmentView: View {
                     
                 }
                 if newAssessment.examDone {
-                    HStack{
-                        Text("Marks attained:")
-                        TextField("Marks", value: $newAssessment.markAttained, formatter: formatter)
+                    HStack {
+                        Text("Result:")
+                        NumberField(titleKey: "Marks", value: Binding{
+                            newAssessment.markAttained
+                        }set:{ newValue in
+                            newAssessment.markAttained = newValue
+                        })
+                        Text("marks or")
+                        NumberField(titleKey: "Percentage", value: Binding{
+                            newAssessment.percentage
+                        }set:{ newValue in
+                            newAssessment.markAttained = newValue * newAssessment.totalMarks / 100
+                            
+                        })
+                        Text("%")
+                        
                     }
                 } else{
                     DatePicker(

@@ -86,12 +86,21 @@ struct AssessmentDetailView: View {
                     
                     if assess.examDone {
                         HStack {
-                            Text("Marks attained:")
-                            TextField("Marks", text: Binding{
-                                String(assess.markAttained)
+                            Text("Result:")
+                            NumberField(titleKey: "Marks", value: Binding{
+                                assess.markAttained
                             }set:{ newValue in
-                                assess.markAttained = Double(newValue) ?? assess.markAttained 
+                                assess.markAttained = newValue
                             })
+                            Text("marks or")
+                            NumberField(titleKey: "Percentage", value: Binding{
+                                assess.percentage
+                            }set:{ newValue in
+                                assess.markAttained = newValue * assess.totalMarks / 100
+                                
+                            })
+                            Text("%")
+                            
                         }
                     } else {
                         DatePicker(

@@ -29,7 +29,7 @@ struct SettingsView: View {
         NavigationStack{
             
             AForm {
-                Section("Grading system") {
+                Section("Grading System") {
                     Picker("Grading System Type", selection: $gradeType) {
                         
                         // Enum cases
@@ -80,14 +80,24 @@ struct SettingsView: View {
                                 }
                             }
                     }else{
-                        Section(header: Text("Systems"), footer: Text("The first system is the default")){
-                            List($systemmanager.systems, editActions: .all){$system in
+                        Section(header: HStack{
+                            Text("Systems")
+                            Spacer()
+                            EditButton()
+                        }, footer: Text("The first system is the default\nSwipe actions: right to duplicate, left to delete")){
+                            ForEach($systemmanager.systems, editActions: .all){$system in
                                 NavigationLink{
                                     SystemDetailView(system: $system)
                                 }label: {
                                     HStack{
                                         Text(system.name)
                                     }
+                                }
+                                .swipeActions(edge: .leading) {
+                                    Button("Duplicate"){
+                                        systemmanager.systems.append(GradeSystem(name: system.name, grades: system.grades, type: system.type))
+                                    }
+                                    .tint(.accent)
                                 }
                             }
                             
@@ -137,15 +147,6 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    EditButton()
-                        .padding(.trailing, 8)
-                        .mask{
-                            RoundedRectangle(cornerRadius: 10)
-                        }
-                }
-            }
             
             
         }

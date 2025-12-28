@@ -25,7 +25,7 @@ struct SubjectDetailView: View {
         
         NavigationStack {
             AForm{
-                Section("subject info") {
+                Section("Subject Info") {
                     TextField("Name",text:$sub.name)
                     HStack{
                         Text("No. of Assessments")
@@ -92,7 +92,7 @@ struct SubjectDetailView: View {
                 }
                 .lrb(themeSelect)
                 if sub.assessments.map({$0.markAttained}).count>0{
-                    Section("Subject trends (%)"){
+                    Section("Subject Trends (%)"){
                         GraphView(sub: sub)
                     }
                     .lrb(themeSelect)
@@ -129,14 +129,14 @@ struct SubjectDetailView: View {
         
     }
 }
-struct SubjectDetailView_Previews: PreviewProvider {
-    static var previews: some View {
-        SubjectDetailView(sub: .constant(Subject(name: "Mathematics", assessments: [
-            Assessment(name: "WA1", weightage: 10, totalMarks: 20, examDone: true, markAttained: 12, examDate: Date(), haveReminder: false, reminder: Date()),
-            Assessment(name: "WA2", weightage: 15, totalMarks: 30, examDone: true, markAttained: 23, examDate: Date(), haveReminder: false, reminder: Date()),
-            Assessment(name: "WA3", weightage: 15, totalMarks: 45, examDone: true, markAttained: 37, examDate: Date(), haveReminder: false, reminder: Date()),
-            Assessment(name: "EYE", weightage: 60, totalMarks: 120, examDone: false, markAttained: 0, examDate: Date(), haveReminder: true, reminder: Date())
-        ], targetMark: 80, credits: 0, numOfAssessments: 4)))
+#Preview {
+    @Previewable @State var sub = Subject(name: "Mathematics", assessments: [
+        Assessment(name: "WA1", weightage: 10, totalMarks: 20, examDone: true, markAttained: 12, examDate: Date(), haveReminder: false, reminder: Date()),
+        Assessment(name: "WA2", weightage: 15, totalMarks: 30, examDone: true, markAttained: 23, examDate: Date(), haveReminder: false, reminder: Date()),
+        Assessment(name: "WA3", weightage: 15, totalMarks: 45, examDone: true, markAttained: 37, examDate: Date(), haveReminder: false, reminder: Date()),
+        Assessment(name: "EYE", weightage: 60, totalMarks: 120, examDone: false, markAttained: 0, examDate: Date(), haveReminder: true, reminder: Date())
+    ], targetMark: 80, credits: 0, numOfAssessments: 4)
+    SubjectDetailView(sub: $sub)
         .environment(SystemManager())
-    }
+    
 }
