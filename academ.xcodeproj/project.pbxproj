@@ -10,9 +10,22 @@
 		01E7B6962EFE9F900042C86E /* academ.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = academ.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		016134C02F00D2810070F3BE /* Exceptions for "Academ" folder in "academ" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 01E7B6952EFE9F900042C86E /* academ */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		01E7B6982EFE9F900042C86E /* Academ */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				016134C02F00D2810070F3BE /* Exceptions for "Academ" folder in "academ" target */,
+			);
 			path = Academ;
 			sourceTree = "<group>";
 		};
@@ -257,6 +270,7 @@
 				DEVELOPMENT_TEAM = XL5JK4F896;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Academ/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -290,6 +304,7 @@
 				DEVELOPMENT_TEAM = XL5JK4F896;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Academ/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
