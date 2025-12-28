@@ -11,9 +11,9 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		01E7B6982EFE9F900042C86E /* academ */ = {
+		01E7B6982EFE9F900042C86E /* academtmp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = academ;
+			path = academtmp;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -32,7 +32,7 @@
 		01E7B68D2EFE9F900042C86E = {
 			isa = PBXGroup;
 			children = (
-				01E7B6982EFE9F900042C86E /* academ */,
+				01E7B6982EFE9F900042C86E /* academtmp */,
 				01E7B6972EFE9F900042C86E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -61,7 +61,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				01E7B6982EFE9F900042C86E /* academ */,
+				01E7B6982EFE9F900042C86E /* academtmp */,
 			);
 			name = academ;
 			packageProductDependencies = (
