@@ -11,26 +11,60 @@ import SwiftUI
 struct ContentView: View {
     @Environment(\.colorScheme) var colorScheme
     @AppStorage("themes") var themeSelect = "Default"
-    @State private var selection = 1
+    @State private var selection: String? = "dashboard"
     @State private var lastDark = ""
     @State private var lastLight = ""
+    @Environment(\.horizontalSizeClass) var horzSC
+    @Environment(SubjectManager.self) var subjectManager
     var body: some View {
-        TabView(selection: $selection){
-            SubjectsView()
-                .tabItem {
-                    Label("Subjects", systemImage: "books.vertical")
-                        .ignoresSafeArea(.all)
-                }.tag(0)
-             DashboardView()
-                .tabItem{
-                    Label("Dashboard", systemImage: "gauge.open.with.lines.needle.33percent")
-                }.tag(1)
-            SettingsView()
-                .tabItem {
-                    Label("Settings", systemImage: "gear")
-                        .ignoresSafeArea(.all)
-                }.tag(2)
-            
+        @Bindable var settings = subjectManager
+        Group{
+            if horzSC == .compact{
+                TabView(selection: $selection){
+                    
+                    Tab("Subjects", systemImage: "books.vertical", value: "subjects") {
+                        SubjectsView()
+                    }
+                    Tab("Dashboard", systemImage: "gauge.open.with.lines.needle.33percent", value: "dashboard") {
+                        DashboardView()
+                    }
+                    Tab("Settings", systemImage: "gear", value: "settings") {
+                        SettingsView()
+                    }
+                    
+                    
+                }
+            }else{
+                NavigationSplitView{
+                    List(selection: $selection) {
+                        NavigationLink{
+                            DashboardView()
+                        }label:{
+                            Label("Dashboard", systemImage: "gauge.open.with.lines.needle.33percent")
+                        }.tag("dashboard")
+                        NavigationLink{
+                            SubjectsView()
+                        }label: {
+                            Label("Subjects", systemImage: "books.vertical")
+                                .ignoresSafeArea(.all)
+                        }.tag("subjects")
+                        Section{
+                            ForEach($settings.subjects){$sub in
+                                NavigationLink(sub.name, destination: SubjectDetailView(sub: $sub)).tag("subject_\(sub.id)")
+                            }
+                        }
+                        NavigationLink{
+                            SettingsView()
+                        }label: {
+                            Label("Settings", systemImage: "gear")
+                                .ignoresSafeArea(.all)
+                        }.tag("settings")
+                        
+                    }
+                }detail: {
+                    DashboardView()
+                }
+            }
         }
         .onAppear(){
             print("boom")
@@ -72,7 +106,6 @@ struct ContentView: View {
     ContentView()
         .environment(SubjectManager())
         .environment(SystemManager())
-    
 }
 
 extension Section where Parent: View, Content: View, Footer: View {

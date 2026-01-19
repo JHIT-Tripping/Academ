@@ -6,7 +6,7 @@ struct GraphView: View {
     @AppStorage("themes") var themeSelect = "Default"
     var body: some View {
         VStack{
-            if sub.assessments.filter({$0.examDone == true}).count <= 1 {
+            if sub.doneAssessments.count <= 1 {
                 HStack{
                     Spacer()
                     VStack{

@@ -13,6 +13,9 @@ struct DonutChartView: View {
     @AppStorage("passingGrade") var pass:Double = 50
     
     var formattedResult: String {
+        if subject.doneAssessments.isEmpty{
+            return "--"
+        }
         return subject.currentOverall().isNaN || subject.currentOverall().isSignalingNaN ? "--" : systemmanager.gradeCalculate(mark: Double(subject.currentOverall()), formatt: "%.0f", customSys: subject.customSystem)
     }
     var lineColor:Color{

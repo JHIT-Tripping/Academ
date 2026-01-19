@@ -32,14 +32,13 @@ struct DashboardView: View {
         NavigationStack{
             AForm {
                 Section {
-                    if subjectmanager.subjects.isEmpty {
+                    if subjectmanager.subjects.filter({!$0.doneAssessments.isEmpty}).isEmpty {
                         Text("No subjects")
-                            .foregroundColor(.gray)
+                            .foregroundStyle(.gray)
                     } else {
                         ScrollView(.horizontal) {
                             HStack {
                                 ForEach($subjectmanager.subjects) { $subject in
-                                    if !subject.assessments.map({ $0.markAttained }).isEmpty {
                                         NavigationLink {
                                             SubjectDetailView(sub: $subject)
                                         } label: {
@@ -51,7 +50,7 @@ struct DashboardView: View {
                                                     .foregroundColor(.primary)
                                             }
                                         }
-                                    }
+                                    
                                 }
                             }
                         }
@@ -95,7 +94,10 @@ struct DashboardView: View {
                         Text("Trend").tag(2)
                     }
                     .pickerStyle(SegmentedPickerStyle())
-                    
+                    if subjectmanager.subjects.filter({!$0.doneAssessments.isEmpty}).isEmpty {
+                        Text("No data to show")
+                            .foregroundStyle(.gray)
+                    }else{
                         
                         if chartType == 0{
                             Chart(subjectmanager.subjects){
@@ -103,7 +105,7 @@ struct DashboardView: View {
                                     x: .value("Subject", $0.name),
                                     y: .value("Overall %", $0.currentOverall())
                                 )
-                                .cornerRadius(25)
+                                .cornerRadius(10)
                                 .foregroundStyle(by: .value("Type", "Overall"))
                                 RuleMark(y: .value("Average", subjectmanager.subjects.reduce(0){
                                     $0+$1.currentOverall()
@@ -115,12 +117,12 @@ struct DashboardView: View {
                             Chart(subjectmanager.subjects){
                                 BarMark(
                                     x: .value("Subject", $0.name),
-                                    y: .value("Last %", $0.assessments.last(where: {$0.examDone == true})?.percentage ?? 0)
+                                    y: .value("Last %", $0.doneAssessments.last?.percentage ?? 0)
                                 )
-                                .cornerRadius(25)
+                                .cornerRadius(10)
                                 .foregroundStyle(by: .value("Type", "Last"))
                                 RuleMark(y: .value("Average", subjectmanager.subjects.reduce(0){
-                                    $0+($1.assessments.last(where: {$0.examDone == true})?.percentage ?? 0)
+                                    $0+($1.doneAssessments.last?.percentage ?? 0)
                                 }/Double(subjectmanager.subjects.count)))
                                 .foregroundStyle(by: .value("Type", "Average"))
                             }
@@ -128,19 +130,19 @@ struct DashboardView: View {
                         }else if chartType == 2{
                             Chart(subjectmanager.subjects) { subject in
                                 
-                                    ForEach(subject.assessments.indices, id: \.self) { index in
-                                        let assessment = subject.assessments[index]
-                                        if assessment.examDone {
-                                            LineMark(x: .value("Assessment", Double(index)/Double(subject.numOfAssessments)), y: .value("Percentage", assessment.percentage))
-                                                .foregroundStyle(by: .value("Subject", subject.name))
-                                        }
+                                ForEach(subject.assessments.indices, id: \.self) { index in
+                                    let assessment = subject.assessments[index]
+                                    if assessment.examDone {
+                                        LineMark(x: .value("Assessment", Double(index)/Double(subject.numOfAssessments)), y: .value("Percentage", assessment.percentage))
+                                            .foregroundStyle(by: .value("Subject", subject.name))
+                                    }
                                     
                                 }
                             }
                             .chartXScale(domain: 0...1)
                             .chartXAxis{AxisMarks{_ in}}
                         }
-                    
+                    }
                         
                 }
                 .lrb(themeSelect)

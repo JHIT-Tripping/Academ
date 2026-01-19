@@ -55,7 +55,6 @@ struct Subject: Identifiable, Codable, Equatable{
 //        return numArray
 //    }//gets a value from the assessments array (type 0 is totalMarks for done assessments, 1 is marksAttained, 2 is weightage, 3 is totalMarks for not done exams) deprecated in v2
     func arrayPercentage()->[Double]{
-        let doneAssessments = assessments.filter{$0.examDone == true}
         let amountArray = doneAssessments.map{$0.markAttained} // marks attained
         let totaledArray = doneAssessments.map{$0.totalMarks} // max marks
         var percentageArray:[Double] = []
@@ -85,7 +84,7 @@ struct Subject: Identifiable, Codable, Equatable{
      
      }*///finds the average of doubles in an array (deprecated)
     func currentOverall() -> Double {
-        let examWeightages = assessments.filter{$0.examDone == true}.map { $0.weightage }
+        let examWeightages = doneAssessments.map { $0.weightage }
         let arrayPercentages = arrayPercentage()
         
         guard !examWeightages.isEmpty && examWeightages.count == arrayPercentages.count else {
@@ -117,14 +116,11 @@ struct Subject: Identifiable, Codable, Equatable{
         let sum = (targetMark-percentageSum)/valueSum*100
         return sum
     }//finds the percentage needed to achieve the goal
-    func getUnfinishedAssessments()->[Assessment]{
-        var unfinishedArray:[Assessment]=[]
-        for i in assessments{
-            if !i.examDone{
-                unfinishedArray.append(i)
-            }
-        }
-        return unfinishedArray
+    var unfinishedAssessments: [Assessment]{
+        assessments.filter{$0.examDone == false}
+    }
+    var doneAssessments:[Assessment]{
+        assessments.filter{$0.examDone == true}
     }
 }
 struct GradeSystem: Codable, Identifiable, Equatable, Hashable{
@@ -254,7 +250,37 @@ struct Theme: Identifiable{
     var secondColor: Color
     var lightMode: Bool
 }
-
+struct SubjectData: Codable {
+    var name: String
+    var assessments: [AssessmentData]
+    var targetMark: Double
+    var credits: Int
+    var numOfAssessments: Int
+    var isCalculated = true
+    var customSystem: GradeSystem?
+}
+struct SubjectDetail: Codable {
+    var name: String
+    var assessments: [AssessmentDetail]
+    var credits: Int
+    var numOfAssessments: Int
+}
+struct AssessmentData: Codable{
+    var name: String
+    var weightage: Double
+    var totalMarks: Double
+    var examDone: Bool
+    var markAttained: Double
+    var examDate: Date
+    var haveReminder: Bool
+    var reminder: Date
+}
+struct AssessmentDetail: Codable{
+    var name: String
+    var weightage: Double
+    var totalMarks: Double
+    var examDate: Date
+}
 //var HMT = GradeSystem(name: "hmt", grades: [
 //    Grade(name: "Distinction", minMark: 80, maxMark: 100, gradePoint: 0.0),
 //    Grade(name: "Merit", minMark: 65, maxMark: 79, gradePoint: 0.0),

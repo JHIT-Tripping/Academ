@@ -37,7 +37,7 @@ struct SubjectOverallView: View {
                 }
                 .lrb(themeSelect)
                 Section("Goals"){
-                    if subje.assessments.filter({$0.examDone == true}).count == subje.numOfAssessments{
+                    if subje.doneAssessments.count == subje.numOfAssessments{
                         HStack{
                             Text("Goal achieved?")
                             if subje.currentOverall() >= subje.targetMark {
@@ -49,7 +49,7 @@ struct SubjectOverallView: View {
                     }else {
                         if subje.currentOverall() >= subje.targetMark{
                             Text("Goal has been achieved, keep up the good work!")
-                            List(subje.getUnfinishedAssessments()){assessme in
+                            List(subje.unfinishedAssessments){assessme in
                                 HStack{
                                     Text("\(assessme.name) target marks:")
                                     Spacer()
@@ -63,7 +63,7 @@ struct SubjectOverallView: View {
                                 Spacer()
                                 Text("\(String(format:"%.2f",subje.weightedGoal())) %")
                             }
-                            List(subje.getUnfinishedAssessments()){assessme in
+                            List(subje.unfinishedAssessments){assessme in
                                 HStack{
                                     Text("\(assessme.name) target marks:")
                                     Spacer()
