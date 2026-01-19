@@ -106,10 +106,10 @@ struct Subject: Identifiable, Codable, Equatable{
     func weightedGoal()->Double{
         var percentageSum:Double=0
         for i in 0..<arrayPercentage().count{
-            percentageSum+=arrayPercentage()[i]/100*assessments.map{$0.weightage}[i]
+            percentageSum+=arrayPercentage()[i]/100*doneAssessments.map{$0.weightage}[i]
         }
         var valueSum:Double = 0
-        for i in assessments.map({$0.weightage}){
+        for i in doneAssessments.map({$0.weightage}){
             valueSum+=i
         }
         valueSum=100-valueSum
