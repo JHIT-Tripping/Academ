@@ -63,6 +63,7 @@ struct NewAssessmentView: View {
     }
     
     var body: some View {
+        NavigationStack{
         AForm{
             Section("Assessment Info"){
                 TextField("Name",text: $newAssessment.name)
@@ -130,8 +131,16 @@ struct NewAssessmentView: View {
                 }
             }
             .lrb(themeSelect)
-            Section {
-                Button("Save") {
+        }
+        
+        .toolbar{
+            ToolbarItem(placement: .navigationBarLeading){
+                Button(role: .close) {
+                    dismiss()
+                }
+            }
+            ToolbarItem(placement: .navigationBarTrailing){
+                Button("Save",role: .confirm){
                     
                     if newAssessment.totalMarks == 0 {
                         alert2 = true
@@ -151,25 +160,17 @@ struct NewAssessmentView: View {
                         }
                     }
                 }
-                Button("Cancel", role: .destructive) {
-                    // code to cancel
-                    dismiss()
-                }
             }
-            .lrb(themeSelect)
         }
         
         
-        
-            
-        
         .alert("The total marks cannot be 0.",isPresented: $alert2){}
-            
+        
         
         .alert("Marks attained cannot exceed total marks of an assessment",isPresented: $alert3){}
-            
         
         
+    }
             
         
         

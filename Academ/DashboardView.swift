@@ -27,35 +27,45 @@ struct DashboardView: View {
     }
     @State private var chartType = 0
     @AppStorage("themes") var themeSelect = "Default"
+    @State private var addSubject = false
     var body: some View {
         @Bindable var subjectmanager = subjectmanager
         NavigationStack{
             AForm {
-                Section {
-                    if subjectmanager.subjects.filter({!$0.doneAssessments.isEmpty}).isEmpty {
-                        Text("No subjects")
-                            .foregroundStyle(.gray)
-                    } else {
-                        ScrollView(.horizontal) {
-                            HStack {
-                                ForEach($subjectmanager.subjects) { $subject in
-                                        NavigationLink {
-                                            SubjectDetailView(sub: $subject)
-                                        } label: {
-                                            VStack {
-                                                DonutChartView(subject: subject, width: 6)
-                                                    .frame(width: 70, height: 50)
-                                                    .padding(4)
-                                                Text(subject.name)
-                                                    .foregroundColor(.primary)
-                                            }
-                                        }
-                                    
+                Section("Subjects") {
+                    ScrollView(.horizontal) {
+                        HStack {
+                            ForEach($subjectmanager.subjects) { $subject in
+                                NavigationLink {
+                                    SubjectDetailView(sub: $subject)
+                                } label: {
+                                    VStack {
+                                        DonutChartView(subject: subject, width: 6)
+                                            .frame(width: 70, height: 50)
+                                            .padding(4)
+                                        Text(subject.name)
+                                            .foregroundColor(.primary)
+                                    }
                                 }
                             }
+                            Button{
+                                addSubject = true
+                            }label: {
+                                VStack {
+                                    Image(systemName: "plus.circle")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 70, height: 57)
+                                    Text("Add")
+                                }
+                            }
+                            .sheet(isPresented: $addSubject) {
+                                NewSubjectView()
+                            }
                         }
-                        .cornerRadius(4)
                     }
+                    .cornerRadius(4)
+                    
                 }
                 .lrb(themeSelect)
                 if !upcomingAssessments.isEmpty{
@@ -133,7 +143,7 @@ struct DashboardView: View {
                                 ForEach(subject.assessments.indices, id: \.self) { index in
                                     let assessment = subject.assessments[index]
                                     if assessment.examDone {
-                                        LineMark(x: .value("Assessment", Double(index)/Double(subject.numOfAssessments)), y: .value("Percentage", assessment.percentage))
+                                        LineMark(x: .value("Assessment", Double(index)/Double(subject.numOfAssessments-1)), y: .value("Percentage", assessment.percentage))
                                             .foregroundStyle(by: .value("Subject", subject.name))
                                     }
                                     
@@ -143,7 +153,7 @@ struct DashboardView: View {
                             .chartXAxis{AxisMarks{_ in}}
                         }
                     }
-                        
+                    
                 }
                 .lrb(themeSelect)
             }

@@ -3,7 +3,6 @@ import SwiftUI
 struct SystemDetailView: View {
     @Binding var system: GradeSystem
     @AppStorage("themes") var themeSelect = "Default"
-    @State private var showSheet = false
     var body: some View {
         //        if let index = systemmanager.systems.firstIndex(where: { $0 == system }) {
         NavigationStack {
@@ -60,9 +59,6 @@ struct SystemDetailView: View {
                     
                 }
                 .lrb(themeSelect)
-                .sheet(isPresented: $showSheet){
-                    NewGradeView(system: $system)
-                }
             }
             .navigationTitle(system.name)
             .toolbar {

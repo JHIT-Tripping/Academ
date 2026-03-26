@@ -79,22 +79,24 @@ struct NewSubjectView: View {
                     }
                 }
                 .lrb(themeSelect)
-                Section{
-                    Button("Save"){
-                        subjectmanager.subjects.append(newSubject)
-                        dismiss()
-                    }
-                    Button("Cancel", role:.destructive){
-                        dismiss()
-                    }
-                }
-                .lrb(themeSelect)
             }
             .sheet(isPresented: $showNewAssessmentSheet){
                 NewAssessmentView(sub: $newSubject)
-                    .presentationDetents([.fraction(0.6)])
+                    .presentationDetents([.fraction(0.8)])
             }
-            
+            .toolbar{
+                ToolbarItem(placement: .navigationBarLeading){
+                    Button(role: .close) {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing){
+                    Button("Save",role: .confirm){
+                        subjectmanager.subjects.append(newSubject)
+                        dismiss()
+                    }
+                }
+            }
         }
         
     }

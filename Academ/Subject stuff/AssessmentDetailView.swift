@@ -158,6 +158,7 @@ struct OptionalDatePicker: View {
                     Image(systemName: "minus.circle.fill")
                         .foregroundStyle(.red)
                 }
+                .buttonStyle(.plain)
             }
         } else {
             Button("Add \(name)", systemImage: "plus") {

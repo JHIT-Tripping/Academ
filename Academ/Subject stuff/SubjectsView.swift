@@ -103,8 +103,6 @@ struct SubjectsView: View {
             }
             .sheet(isPresented: $displaySheet) {
                 NewSubjectView()
-                    .presentationDetents([.fraction(0.8)])
-                    .presentationDragIndicator(.visible)
             }
         }
     }

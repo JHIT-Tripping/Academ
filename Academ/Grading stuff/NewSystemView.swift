@@ -9,9 +9,8 @@ struct NewSystemView: View{
     @Environment(SystemManager.self) var systemmanager: SystemManager
     @AppStorage("themes") var themeSelect = "Default"
     @AppStorage("gradeType") var gradeType = GradeType.none
-    @State private var showSheet = false
     var body: some View{
-        let _: () = Self._printChanges() 
+        let _: () = Self._printChanges()
         NavigationStack{
             AForm{
                 Section("Info"){
@@ -49,22 +48,22 @@ struct NewSystemView: View{
                     
                 }
                 .lrb(themeSelect)
-                .sheet(isPresented: $showSheet){
-                    NewGradeView(system: $newSystem)
+                
+            }
+            
+            .toolbar{
+                ToolbarItem(placement: .navigationBarLeading){
+                    Button(role: .close) {
+                        dismiss()
+                    }
                 }
-                Section{
-                    Button("Save"){
+                ToolbarItem(placement: .navigationBarTrailing){
+                    Button("Save",role: .confirm){
                         systemmanager.systems.append(newSystem)
                         dismiss()
                     }
-                    Button("Cancel", role: .destructive){
-                        dismiss()
-                    }
                 }
-                .lrb(themeSelect)
             }
-            
-            
             .onAppear(){
                 newSystem.type = gradeType
             }
