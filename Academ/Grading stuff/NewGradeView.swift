@@ -12,26 +12,21 @@ struct NewGradeView: View {
     @Environment(\.dismiss) var dismiss
     @Binding var system: GradeSystem
     @AppStorage("themes") var themeSelect = "Default"
-    let formatter: NumberFormatter = {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        return formatter
-    }()
     var body: some View {
         AForm{
             Section("Grade Info"){
                 TextField("Name", text: $newGrade.name)
                 HStack{
                     Text("Min. Mark:")
-                    TextField("Number",value: $newGrade.minMark, formatter: formatter)
+                    NumberField(titleKey: "Number",value: $newGrade.minMark)
                 }
                 HStack{
                     Text("Max. Mark:")
-                    TextField("Number",value: $newGrade.maxMark, formatter: formatter)
+                    NumberField(titleKey: "Number",value: $newGrade.maxMark)
                 }
                 HStack{
                     Text("Grade Point:")
-                    TextField("Number",value: $newGrade.gradePoint, formatter: formatter)
+                    NumberField(titleKey: "Number",value: $newGrade.gradePoint)
                 }
             }
             .lrb(themeSelect)

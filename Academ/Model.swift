@@ -16,8 +16,7 @@ struct Assessment: Identifiable, Codable, Hashable{
     var examDone: Bool
     var markAttained: Double
     var examDate: Date
-    var haveReminder: Bool
-    var reminder: Date
+    var reminder: Date?
     var percentage: Double{
         return markAttained/totalMarks*100
     }

@@ -14,11 +14,6 @@ struct NewSubjectView: View {
     @Environment(\.dismiss) var dismiss
     @AppStorage("gpaCredits") var haveCredits = false
     @AppStorage("themes") var themeSelect = "Default"
-    let formatter: NumberFormatter = {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        return formatter
-    }()
     @Environment(SystemManager.self) var systemManager: SystemManager
     var body: some View {
         NavigationStack {
@@ -27,18 +22,18 @@ struct NewSubjectView: View {
                     TextField("Subject", text:$newSubject.name)
                     HStack{
                         Text("Overall Goal")
-                        TextField("Percentage", value: $newSubject.targetMark, formatter: formatter)
+                        NumberField(titleKey: "Percentage", value: $newSubject.targetMark)
                         Text("%")
                     }
                     HStack{
-                        Text("No. of assessments")
-                        TextField("Number", value: $newSubject.numOfAssessments, formatter: formatter)
+                        Text("No. of assessments:")
+                        TextField("Number", value: $newSubject.numOfAssessments, formatter: NumberFormatter())
                         
                     }
                     if haveCredits{
                         HStack{
                             Text("Credit")
-                            TextField("Value",value: $newSubject.credits, formatter: formatter)
+                            TextField("Value",value: $newSubject.credits, formatter: NumberFormatter())
                         }
                     }
                     Toggle("Is calculated?", isOn: $newSubject.isCalculated)

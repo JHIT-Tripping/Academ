@@ -58,6 +58,6 @@ func getTheme(_ themeName: String)->Theme{
     if let theme = themeList[themeName] {
         return theme
     }else{
-        return Theme(mainColor: [Color.white], secondColor: Color(hex: "f2f2f7"), lightMode: true)
+        return Theme(mainColor: [Color(hex: "f2f2f7")], secondColor: .white, lightMode: true)
     }
 }

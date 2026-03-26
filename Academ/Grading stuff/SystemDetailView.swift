@@ -88,7 +88,11 @@ struct NumberField: View {
     var body: some View {
         TextField(titleKey, value: $value, formatter: formatter)
             .padding(5)
-            .background(.primary.opacity(disabled ?? false ? 0 : 0.1))
+            .background(themeSelect == "Default" && (getTheme(themeSelect).mainColor.first != nil) ?
+                .secondary.opacity(0.1)
+                        :
+                            getTheme(themeSelect).mainColor.first!.mix(with: getTheme(themeSelect).mainColor.last!, by: 0.5)
+            )
             .mask(RoundedRectangle(cornerRadius: 10))
             .disabled(disabled ?? false)
     }

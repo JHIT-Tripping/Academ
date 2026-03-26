@@ -15,11 +15,6 @@ struct SubjectDetailView: View {
     @AppStorage("gpaCredits") var haveCredits = false
     @AppStorage("passingGrade") var pass:Double = 50
     @AppStorage("themes") var themeSelect = "Default"
-    let formatter: NumberFormatter = {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        return formatter
-    }()
     @Environment(SystemManager.self) var systemManager: SystemManager
     var body: some View {
         
@@ -28,12 +23,12 @@ struct SubjectDetailView: View {
                 Section("Subject Info") {
                     TextField("Name",text:$sub.name)
                     HStack{
-                        Text("No. of Assessments")
-                        TextField("Num",value:$sub.numOfAssessments, formatter: formatter)
+                        Text("No. of assessments:")
+                        TextField("Num",value:$sub.numOfAssessments, formatter: NumberFormatter())
                     }
                     HStack{
                         Text("Overall Goal:")
-                        TextField("Percentage",value:$sub.targetMark,formatter: formatter)
+                        NumberField(titleKey: "Percentage",value:$sub.targetMark)
                         Text("%")
                     }//overall goal
                     if sub.assessments.map({$0.markAttained}).count>0{
@@ -46,7 +41,7 @@ struct SubjectDetailView: View {
                     if haveCredits{
                         HStack{
                             Text("Credit")
-                            TextField("Hours",value: $sub.credits, formatter: formatter)
+                            TextField("Hours",value: $sub.credits, formatter: NumberFormatter())
                         }
                     }
                     Toggle("Is calculated?", isOn: $sub.isCalculated)
@@ -131,10 +126,10 @@ struct SubjectDetailView: View {
 }
 #Preview {
     @Previewable @State var sub = Subject(name: "Mathematics", assessments: [
-        Assessment(name: "WA1", weightage: 10, totalMarks: 20, examDone: true, markAttained: 12, examDate: Date(), haveReminder: false, reminder: Date()),
-        Assessment(name: "WA2", weightage: 15, totalMarks: 30, examDone: true, markAttained: 23, examDate: Date(), haveReminder: false, reminder: Date()),
-        Assessment(name: "WA3", weightage: 15, totalMarks: 45, examDone: true, markAttained: 37, examDate: Date(), haveReminder: false, reminder: Date()),
-        Assessment(name: "EYE", weightage: 60, totalMarks: 120, examDone: false, markAttained: 0, examDate: Date(), haveReminder: true, reminder: Date())
+        Assessment(name: "WA1", weightage: 10, totalMarks: 20, examDone: true, markAttained: 12, examDate: Date(), reminder: Date()),
+        Assessment(name: "WA2", weightage: 15, totalMarks: 30, examDone: true, markAttained: 23, examDate: Date(), reminder: Date()),
+        Assessment(name: "WA3", weightage: 15, totalMarks: 45, examDone: true, markAttained: 37, examDate: Date(), reminder: Date()),
+        Assessment(name: "EYE", weightage: 60, totalMarks: 120, examDone: false, markAttained: 0, examDate: Date(), reminder: Date())
     ], targetMark: 80, credits: 0, numOfAssessments: 4)
     SubjectDetailView(sub: $sub)
         .environment(SystemManager())

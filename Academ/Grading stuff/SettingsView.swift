@@ -14,11 +14,6 @@ struct SettingsView: View {
     @State private var showSheet = false
     @Environment(SubjectManager.self) var subjectmanager: SubjectManager
     @Environment(SystemManager.self) var systemmanager: SystemManager
-    let formatter: NumberFormatter = {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        return formatter
-    }()
     @AppStorage("gradeType") var gradeType = GradeType.none
     @AppStorage("gpaCredits") var haveCredits = false
     @AppStorage("passingGrade") var pass:Double = 50
@@ -60,7 +55,7 @@ struct SettingsView: View {
                     }
                     HStack{
                         Text("Passing mark:")
-                        TextField("Mark", value: $pass, formatter: formatter)
+                        NumberField(titleKey: "Mark",value: $pass)
                     }
                 }
                 .lrb(themeSelect)

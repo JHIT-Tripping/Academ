@@ -25,18 +25,13 @@ func requestNotificationAuthorization() {
 
 
 struct NewAssessmentView: View {
-    @State private var newAssessment = Assessment(name: "", weightage: 0, totalMarks: 0, examDone: false, markAttained: 0, examDate: Date(), haveReminder: false, reminder: Date())
+    @State private var newAssessment = Assessment(name: "", weightage: 0, totalMarks: 0, examDone: false, markAttained: 0, examDate: Date())
     @State var alert2 = false
     @State var alert3 = false
     @Environment(\.dismiss) var dismiss
     @Binding var sub: Subject
     @State var NotificationSet =  true
     @AppStorage("themes") var themeSelect = "Default"
-    let formatter: NumberFormatter = {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        return formatter
-    }()
     func scheduleNotification(at date: Date, body: String, title: String) {
         
         requestNotificationAuthorization()
@@ -74,7 +69,7 @@ struct NewAssessmentView: View {
                 //TextField()
                 HStack{
                     Text("Weightage:")
-                    TextField("Percentage", value: Binding{
+                    NumberField(titleKey: "Percentage", value: Binding{
                         newAssessment.weightage
                     }set:{newValue in
                         if sub.assessments.reduce(0, {$0+$1.weightage}) + newValue > 100 || newValue == 0 {
@@ -83,14 +78,14 @@ struct NewAssessmentView: View {
                         }else{
                             newAssessment.weightage = newValue
                         }
-                    }, formatter: formatter)
+                    })
                     Text("%")
                     
                     
                 }
                 HStack{
                     Text("Total marks:")
-                    TextField("Marks", value: $newAssessment.totalMarks, formatter: formatter)
+                    NumberField(titleKey: "Marks", value: $newAssessment.totalMarks)
                     
                 }
                 
@@ -125,17 +120,13 @@ struct NewAssessmentView: View {
                         selection: $newAssessment.examDate,
                         displayedComponents: [.date]
                     )
-                    HStack{
-                        Text("Have reminder?")
-                        Toggle(isOn: $newAssessment.haveReminder){
-                            Text("")
+                    OptionalDatePicker(date: $newAssessment.reminder, name: "reminder")
+                        .onChange(of: newAssessment.reminder) { oldValue, newValue in
+                            if let reminder = newAssessment.reminder {
+                                print("schedule")
+                                scheduleNotification(at: reminder, body: "Your exam is on \(newAssessment.examDate)", title: newAssessment.name)
+                            }
                         }
-                        
-                    }
-                    if newAssessment.haveReminder{
-                        
-                        DatePicker("Reminder Date",selection: $newAssessment.reminder, displayedComponents: [.date, .hourAndMinute])
-                    }
                 }
             }
             .lrb(themeSelect)
@@ -152,10 +143,10 @@ struct NewAssessmentView: View {
                     else {
                         sub.assessments.append(newAssessment)
                         dismiss()
-                        if newAssessment.haveReminder && NotificationSet{
+                        if let reminder = newAssessment.reminder, NotificationSet{
                             //                            requestNotificationAuthorization()
                             print("ASKING FOR NOTIFICATION")
-                            scheduleNotification(at: newAssessment.reminder, body: "Your exam is on \(newAssessment.examDate)h", title: newAssessment.name)
+                            scheduleNotification(at: reminder, body: "Your exam is on \(newAssessment.examDate)h", title: newAssessment.name)
                             NotificationSet = false
                         }
                     }

@@ -6,15 +6,10 @@ struct AssessmentDetailView: View {
     @State var NotificationSet =  true
     @State private var showAlert = false
     @AppStorage("themes") var themeSelect = "Default"
-    let formatter: NumberFormatter = {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        return formatter
-    }()
+    let center = UNUserNotificationCenter.current()
     // all data has to be binding or else it would refresh
     func requestNotificationAuthorization() {
-        let center = UNUserNotificationCenter.current()
-        center.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+        center.requestAuthorization(options: [.alert, .sound, .badge, .provisional]) { granted, error in
             if granted {
                 print("Notification authorization granted")
             } else {
@@ -25,32 +20,33 @@ struct AssessmentDetailView: View {
     
     
     
-    func scheduleNotification(at date: Date, body: String, title: String) {
-        // Remove all pending notifications
-        requestNotificationAuthorization()
-        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
-        
-        
+    func scheduleNotification(
+        id: UUID,
+        at date: Date,
+        body: String,
+        title: String
+    ) {
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
-        
-        let calendar = Calendar.current
-        let components = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: date)
-        
-        
-        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
-        
-        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
-        
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                print("Error scheduling notification: \(error.localizedDescription)")
-            } else {
-                print("Notification scheduled successfully")
-            }
-        }
+
+        let components = Calendar.current.dateComponents(
+            [.year, .month, .day],
+            from: date
+        )
+
+        let trigger = UNCalendarNotificationTrigger(
+            dateMatching: components,
+            repeats: false
+        )
+
+        let request = UNNotificationRequest(
+            identifier: "assessment_reminder_\(id.uuidString)",
+            content: content,
+            trigger: trigger
+        )
+
+        UNUserNotificationCenter.current().add(request)
     }
     
     var body: some View {
@@ -62,19 +58,19 @@ struct AssessmentDetailView: View {
                     
                     HStack {
                         Text("Weightage:")
-                        TextField("Percentage", value: $assess.weightage, formatter: formatter)
+                        NumberField(titleKey: "Percentage", value: $assess.weightage)
                         Text("%")
                     }
                     
                     HStack {
                         Text("Total marks:")
-                        TextField("Marks", value: Binding{
+                        NumberField(titleKey: "Marks", value: Binding{
                             assess.totalMarks
                         }set:{ newValue in
                             if newValue >= assess.markAttained, newValue > 0{
                                 assess.totalMarks = newValue
                             }
-                        }, formatter: formatter)
+                        })
                             
                     }
                     
@@ -108,27 +104,23 @@ struct AssessmentDetailView: View {
                             selection: $assess.examDate,
                             displayedComponents: [.date]
                         )
-                        
-                        HStack {
-                            Text("Have reminder?")
-                            Toggle(isOn: $assess.haveReminder) {
-                                Text("")
+                        OptionalDatePicker(date: $assess.reminder, name: "reminder")
+                            .onChange(of: assess.reminder) { _, newValue in
+
+                                if let reminder = newValue {
+                                    scheduleNotification(
+                                        id: assess.id,
+                                        at: reminder,
+                                        body: "Your exam is on \(assess.examDate)",
+                                        title: assess.name
+                                    )
+                                } else {
+                                    UNUserNotificationCenter.current()
+                                        .removePendingNotificationRequests(withIdentifiers: ["assessment_reminder_\(assess.id.uuidString)"])
+                                }
                             }
-                        }
-                        .onChange(of: assess.haveReminder) { oldValue, newValue in
-                            if newValue {
-                                print("schedule")
-                                scheduleNotification(at: assess.reminder, body: "Your exam is on \(assess.examDate)", title: assess.name)
-                            }
-                        }
+
                         
-                        if assess.haveReminder && NotificationSet {
-                            DatePicker(
-                                "Reminder:",
-                                selection: $assess.reminder,
-                                displayedComponents: [.date, .hourAndMinute]
-                            )
-                        }
                     }
                 }
                 .lrb(themeSelect)
@@ -141,7 +133,36 @@ struct AssessmentDetailView: View {
         }
 }
 #Preview{
-    @Previewable @State var assessment = Assessment(name: "WA1", weightage: 10, totalMarks: 20, examDone: false, markAttained: 13, examDate: Date(),   haveReminder: true, reminder: Date())
+    @Previewable @State var assessment = Assessment(name: "WA1", weightage: 10, totalMarks: 20, examDone: false, markAttained: 13, examDate: Date(), reminder: Date())
     AssessmentDetailView(assess: $assessment)
 }
 
+struct OptionalDatePicker: View {
+    @Binding var date: Date?
+    var name: String
+    var body: some View {
+        if let hasDate = date {
+            HStack{
+                DatePicker(
+                    "\(name.capitalized):",
+                    selection: Binding(get: {
+                        hasDate
+                    }, set: { value in
+                        date = value
+                    }),
+                    displayedComponents: [.date, .hourAndMinute]
+                )
+                Button {
+                    date = nil
+                }label: {
+                    Image(systemName: "minus.circle.fill")
+                        .foregroundStyle(.red)
+                }
+            }
+        } else {
+            Button("Add \(name)", systemImage: "plus") {
+                date = Date()
+            }
+        }
+    }
+}
