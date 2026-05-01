@@ -28,7 +28,6 @@ struct Subject: Identifiable, Codable, Equatable{
     var targetMark: Double
     // var hasGoal: Bool
     var credits: Int
-    var numOfAssessments: Int
     //    var isHMT = false
 //    var isFoundation = false
 //    var isMTSB = false
@@ -63,14 +62,7 @@ struct Subject: Identifiable, Codable, Equatable{
         return percentageArray
     }//calculates percentage and puts it in an array
     func highest()->Double{
-        let doubleArray = arrayPercentage()
-        var high:Double=0
-        for i in doubleArray{
-            if i > high{
-                high=i
-            }
-        }
-        return high
+        return arrayPercentage().max() ?? 0
     }//finds the highest value in an array
     /*func average()->Double{
      let doubleArray = arrayPercentage()
@@ -102,6 +94,9 @@ struct Subject: Identifiable, Codable, Equatable{
         
         
     }//finds the current overall based on the percentage
+    func weightageSum()->Double{
+        return assessments.map{$0.weightage}.reduce(0, +)
+    }
     func weightedGoal()->Double{
         var percentageSum:Double=0
         for i in 0..<arrayPercentage().count{
@@ -254,7 +249,6 @@ struct SubjectData: Codable {
     var assessments: [AssessmentData]
     var targetMark: Double
     var credits: Int
-    var numOfAssessments: Int
     var isCalculated = true
     var customSystem: GradeSystem?
 }
@@ -262,7 +256,6 @@ struct SubjectDetail: Codable {
     var name: String
     var assessments: [AssessmentDetail]
     var credits: Int
-    var numOfAssessments: Int
 }
 struct AssessmentData: Codable{
     var name: String

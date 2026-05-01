@@ -178,7 +178,7 @@ struct NewAssessmentView: View {
     }
 }
 #Preview {
-    NewAssessmentView(sub: .constant(Subject(name: "Mathematics", assessments: [], targetMark: 75, credits: 0, numOfAssessments: 4)))
+    NewAssessmentView(sub: .constant(Subject(name: "Mathematics", assessments: [], targetMark: 75, credits: 0)))
 }
 
 

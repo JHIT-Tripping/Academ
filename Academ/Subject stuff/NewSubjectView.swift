@@ -9,7 +9,7 @@ import SwiftUI
 
 struct NewSubjectView: View {
     @Environment(SubjectManager.self) var subjectmanager: SubjectManager
-    @State private var newSubject:Subject = Subject(name: "", assessments: [], targetMark: 0, credits: 1, numOfAssessments: 4)
+    @State private var newSubject:Subject = Subject(name: "", assessments: [], targetMark: 0, credits: 1)
     @State private var showNewAssessmentSheet = false
     @Environment(\.dismiss) var dismiss
     @AppStorage("gpaCredits") var haveCredits = false
@@ -25,11 +25,11 @@ struct NewSubjectView: View {
                         NumberField(titleKey: "Percentage", value: $newSubject.targetMark)
                         Text("%")
                     }
-                    HStack{
-                        Text("No. of assessments:")
-                        TextField("Number", value: $newSubject.numOfAssessments, formatter: NumberFormatter())
-                        
-                    }
+//                    HStack{
+//                        Text("No. of assessments:")
+//                        TextField("Number", value: $newSubject.numOfAssessments, formatter: NumberFormatter())
+//                        
+//                    }
                     if haveCredits{
                         HStack{
                             Text("Credit")
@@ -67,7 +67,7 @@ struct NewSubjectView: View {
                             Text(assessm.name)
                         }
                     }
-                    if newSubject.numOfAssessments>newSubject.assessments.count{
+                    if newSubject.weightageSum() < 100{
                         Button {
                             showNewAssessmentSheet = true
                         } label: {

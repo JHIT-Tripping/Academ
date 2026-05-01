@@ -22,10 +22,10 @@ struct SubjectDetailView: View {
             AForm{
                 Section("Subject Info") {
                     TextField("Name",text:$sub.name)
-                    HStack{
-                        Text("No. of assessments:")
-                        TextField("Num",value:$sub.numOfAssessments, formatter: NumberFormatter())
-                    }
+//                    HStack{
+//                        Text("No. of assessments:")
+//                        TextField("Num",value:$sub.numOfAssessments, formatter: NumberFormatter())
+//                    }
                     HStack{
                         Text("Overall Goal:")
                         NumberField(titleKey: "Percentage",value:$sub.targetMark)
@@ -75,7 +75,7 @@ struct SubjectDetailView: View {
                             
                         }
                     }
-                    if !(sub.assessments.count >= sub.numOfAssessments){
+                    if sub.weightageSum() < 100{
                         Button {
                             print("sooon")
                             displaySheet = true
@@ -105,7 +105,7 @@ struct SubjectDetailView: View {
                 }
             }
             .onAppear{
-                if (sub.assessments.count == sub.numOfAssessments || sub.numOfAssessments == 0)&&(sub.assessments.reduce(0){$0+$1.weightage}>Double(100)){
+                if (sub.weightageSum() > 100){
                     showAlert=true
                 }
             }
@@ -130,7 +130,7 @@ struct SubjectDetailView: View {
         Assessment(name: "WA2", weightage: 15, totalMarks: 30, examDone: true, markAttained: 23, examDate: Date(), reminder: Date()),
         Assessment(name: "WA3", weightage: 15, totalMarks: 45, examDone: true, markAttained: 37, examDate: Date(), reminder: Date()),
         Assessment(name: "EYE", weightage: 60, totalMarks: 120, examDone: false, markAttained: 0, examDate: Date(), reminder: Date())
-    ], targetMark: 80, credits: 0, numOfAssessments: 4)
+    ], targetMark: 80, credits: 0)
     SubjectDetailView(sub: $sub)
         .environment(SystemManager())
     

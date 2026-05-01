@@ -88,6 +88,11 @@ struct SettingsView: View {
                                         Text(system.name)
                                     }
                                 }
+                                .contextMenu{
+                                    Button("Duplicate"){
+                                        systemmanager.systems.append(GradeSystem(name: system.name, grades: system.grades, type: system.type))
+                                    }
+                                }
                                 .swipeActions(edge: .leading) {
                                     Button("Duplicate"){
                                         systemmanager.systems.append(GradeSystem(name: system.name, grades: system.grades, type: system.type))
@@ -123,6 +128,19 @@ struct SettingsView: View {
                         
                     }
                     .pickerStyle(.menu)
+                        HStack{
+                            ThemeSelectView(themeName: "Default")
+                            
+                            .frame(width: 30)
+                            ForEach(themeList.sorted(by: { $0.key < $1.key }).filter({
+                                $0.value.lightMode == (colorScheme == .light)
+                            }), id: \.key) { name, theme in
+                                Spacer()
+                                ThemeSelectView(themeName: name)
+                            }
+                        
+                    }
+                        
                 }
                 
                 .lrb(themeSelect)
@@ -142,12 +160,57 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
-            
+//            .toolbar {
+//                ToolbarItem(placement: .topBarTrailing) {
+//                    Button("", systemImage: "gear"){
+//                        subjectmanager.subjects = [Subject(name: "Mathematics", assessments: [
+//                            Assessment(name: "WA1", weightage: 10, totalMarks: 20, examDone: true, markAttained: 12, examDate: Date(), reminder: Date()),
+//                            Assessment(name: "WA2", weightage: 15, totalMarks: 30, examDone: true, markAttained: 23, examDate: Date(), reminder: Date()),
+//                            Assessment(name: "WA3", weightage: 15, totalMarks: 45, examDone: true, markAttained: 37, examDate: Date(), reminder: Date()),
+//                            Assessment(name: "EYE", weightage: 60, totalMarks: 120, examDone: false, markAttained: 93, examDate: Date(), reminder: Date())
+//                        ], targetMark: 80, credits: 0),
+//                        Subject(name: "English", assessments: [Assessment(name: "WA1", weightage: 10, totalMarks: 30, examDone: true, markAttained: 23, examDate: Date(), reminder: Date())], targetMark: 75, credits: 0),
+//                        Subject(name: "Science", assessments: [Assessment(name: "WA1", weightage: 10, totalMarks: 10, examDone: true, markAttained: 8, examDate: Date(), reminder: Date())], targetMark: 75, credits: 0),
+//                        Subject(name: "History", assessments: [Assessment(name: "WA1", weightage: 10, totalMarks: 20, examDone: true, markAttained: 13, examDate: Date(), reminder: Date())], targetMark: 75, credits: 0),
+//                        Subject(name: "Geography", assessments: [Assessment(name: "WA1", weightage: 10, totalMarks: 40, examDone: true, markAttained: 31, examDate: Date(), reminder: Date())], targetMark: 75, credits: 0)]
+//                    }
+//                }
+//            }
             
         }
     }
 }
-
+struct ThemeSelectView: View {
+    @AppStorage("themes") var themeSelect = "Default"
+    var themeName: String
+    var body: some View {
+        Button{
+            themeSelect = themeName
+        }label: {
+            Circle()
+                .foregroundStyle(themeName == themeSelect ? .accent : .primary)
+                .overlay {
+                    if themeName == "Default"{
+                        Circle()
+                            .fill(.background)
+                            .scaleEffect(0.9)
+                    }else{
+                        Circle()
+                            .fill(
+                                .linearGradient(
+                                    colors:  getTheme(themeName).mainColor,
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                            .scaleEffect(0.9)
+                    }
+                }
+        }
+            .frame(width: 30)
+            .buttonStyle(.plain)
+    }
+}
 #Preview{
     SettingsView()
         .environment(SubjectManager())

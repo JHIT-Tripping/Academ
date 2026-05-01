@@ -37,7 +37,7 @@ struct SubjectOverallView: View {
                 }
                 .lrb(themeSelect)
                 Section("Goals"){
-                    if subje.doneAssessments.count == subje.numOfAssessments{
+                    if subje.weightageSum() < 100{
                         HStack{
                             Text("Goal achieved?")
                             if subje.currentOverall() >= subje.targetMark {
@@ -78,7 +78,8 @@ struct SubjectOverallView: View {
             }
             .navigationTitle(subje.name)
             .onAppear{
-                if (subje.assessments.count == subje.numOfAssessments)&&(subje.assessments.reduce(0){$0+$1.weightage}>Double(100)){
+                print(subje.weightageSum())
+                if subje.weightageSum() > 100{
                     showAlert=true
                 }
             }
@@ -101,7 +102,7 @@ struct SubjectOverallView_Previews: PreviewProvider {
               Assessment(name: "WA2", weightage: 15, totalMarks: 30, examDone: true, markAttained: 23, examDate: Date(), reminder: Date()),
                  Assessment(name: "WA3", weightage: 15, totalMarks: 45, examDone: true, markAttained: 37, examDate: Date(), reminder: Date()),
                    Assessment(name: "EYE", weightage: 60, totalMarks: 120, examDone: false, markAttained: 0, examDate: Date(), reminder: Date())
-        ], targetMark: 80, credits: 0, numOfAssessments: 4)))
+        ], targetMark: 80, credits: 0)))
         .environment(SystemManager())
     }
 }
