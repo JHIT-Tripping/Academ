@@ -65,7 +65,9 @@ struct NewSystemView: View{
                 }
             }
             .onAppear(){
-                newSystem.type = gradeType
+                if let first = defaultSystems[gradeType]?.first{
+                    newSystem = first
+                }
             }
         }
     }

@@ -89,7 +89,11 @@ struct NewAssessmentView: View {
                     NumberField(titleKey: "Marks", value: $newAssessment.totalMarks)
                     
                 }
-                
+                DatePicker(
+                    "Exam Date",
+                    selection: $newAssessment.examDate,
+                    displayedComponents: [.date]
+                )
                 HStack{
                     Text("Exam done?")
                     Toggle(isOn: $newAssessment.examDone){
@@ -116,11 +120,7 @@ struct NewAssessmentView: View {
                         
                     }
                 } else{
-                    DatePicker(
-                        "Exam Date",
-                        selection: $newAssessment.examDate,
-                        displayedComponents: [.date]
-                    )
+                    
                     OptionalDatePicker(date: $newAssessment.reminder, name: "reminder")
                         .onChange(of: newAssessment.reminder) { oldValue, newValue in
                             if let reminder = newAssessment.reminder {

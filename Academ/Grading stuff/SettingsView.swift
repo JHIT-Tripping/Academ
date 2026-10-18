@@ -36,7 +36,7 @@ struct SettingsView: View {
                     .pickerStyle(.menu)
                     .onChange(of: gradeType){
                         if gradeType != .none {
-                            if let matchingSystem = defaultSystems.first(where: { !$0.isEmpty && gradeType == $0[0].type }) {
+                            if let matchingSystem = defaultSystems[gradeType] {
                                 systemmanager.systems = matchingSystem
                             } else {
                                 print("No matching system found")
@@ -64,7 +64,7 @@ struct SettingsView: View {
                         Text("An error occurred")
                             .onAppear(){
                                 if gradeType != .none {
-                                    if let matchingSystem = defaultSystems.first(where: { !$0.isEmpty && gradeType == $0[0].type }) {
+                                    if let matchingSystem = defaultSystems[gradeType] {
                                         systemmanager.systems = matchingSystem
                                     } else {
                                         print("No matching system found")

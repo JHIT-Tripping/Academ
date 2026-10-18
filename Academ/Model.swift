@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import Charts
 
 struct Assessment: Identifiable, Codable, Hashable{
     var id = UUID()
@@ -33,6 +34,13 @@ struct Subject: Identifiable, Codable, Equatable{
 //    var isMTSB = false
     var isCalculated = true
     var customSystem: GradeSystem?
+    var chartSymbol: BasicChartSymbolShape {
+        let symbolCycle: [BasicChartSymbolShape] = [
+            .circle, .square, .triangle, .diamond, .cross, .plus, .pentagon
+        ]
+        let index = abs(id.hashValue) % symbolCycle.count
+        return symbolCycle[index]
+    }
 //    func assessmentArray(type:Int)->[Double]{
 //        var numArray:[Double] = []
 //        for i in assessments{
@@ -116,6 +124,9 @@ struct Subject: Identifiable, Codable, Equatable{
     var doneAssessments:[Assessment]{
         assessments.filter{$0.examDone == true}
     }
+    func earliestAssessmentDate()->Date?{
+        return assessments.map(\.examDate).min()
+    }
 }
 struct GradeSystem: Codable, Identifiable, Equatable, Hashable{
     var id = UUID()
@@ -130,9 +141,8 @@ struct Grade: Codable, Identifiable, Equatable, Hashable{
     var maxMark: Double
     var gradePoint: Double
 }
-var defaultSystems = [
-    [
-    GradeSystem(name: "GPA", grades: [
+var defaultSystems: [GradeType: [GradeSystem]] = [
+    .GPA:[GradeSystem(name: "GPA", grades: [
         Grade(name: "A+", minMark: 80, maxMark: 100, gradePoint: 4.0),
         Grade(name: "A", minMark: 70, maxMark: 79, gradePoint: 3.6),
         Grade(name: "B+", minMark: 65, maxMark: 69, gradePoint: 3.2),
@@ -143,7 +153,7 @@ var defaultSystems = [
         Grade(name: "E", minMark: 40, maxMark: 44, gradePoint: 1.2),
         Grade(name: "F", minMark: 0, maxMark: 39, gradePoint: 0.8)
     ], type: .GPA)], //gpa for rgs
-    [GradeSystem(name: "MSG", grades: [
+    .MSG:[GradeSystem(name: "MSG", grades: [
         Grade(name: "A1", minMark: 75, maxMark: 100, gradePoint: 1.0),
         Grade(name: "A2", minMark: 70, maxMark: 74, gradePoint: 2.0),
         Grade(name: "B3", minMark: 65, maxMark: 69, gradePoint: 3.0),
@@ -160,8 +170,9 @@ var defaultSystems = [
         Grade(name: "C", minMark: 50, maxMark: 59, gradePoint: 5.0),
         Grade(name: "D", minMark: 45, maxMark: 49, gradePoint: 7.0),
         Grade(name: "E", minMark: 40, maxMark: 44, gradePoint: 8.0),
-        Grade(name: "F", minMark: 0, maxMark: 39, gradePoint: 9.0)], type: .MSG)],// MSG
-    [GradeSystem(name: "AL", grades: [
+        Grade(name: "F", minMark: 0, maxMark: 39, gradePoint: 9.0)
+     ], type: .MSG)],// MSG
+    .AL: [GradeSystem(name: "AL", grades: [
         Grade(name: "AL1", minMark: 90, maxMark: 100, gradePoint: 1.0),
         Grade(name: "AL2", minMark: 85, maxMark: 89, gradePoint: 2.0),
         Grade(name: "AL3", minMark: 80, maxMark: 84, gradePoint: 3.0),
@@ -187,7 +198,7 @@ var defaultSystems = [
 //        Grade(name: "E8", minMark: 40, maxMark: 44, gradePoint: 5.0),
 //        Grade(name: "F9", minMark: 0, maxMark: 40, gradePoint: 5.0),
 //    ], type: .overallGrade)],// Overall grade (1 is distinction, 2 is merit, 3 is credit, 4 is sub-pass and 5 is fail for grade points)
-    [GradeSystem(name: "N(A)", grades: [
+    .NA:[GradeSystem(name: "N(A)", grades: [
         Grade(name: "1", minMark: 75, maxMark: 100, gradePoint: 1.0),
         Grade(name: "2", minMark: 70, maxMark: 74, gradePoint: 2.0),
         Grade(name: "3", minMark: 65, maxMark: 69, gradePoint: 3.0),
@@ -195,14 +206,14 @@ var defaultSystems = [
         Grade(name: "5", minMark: 50, maxMark: 59, gradePoint: 5.0),
         Grade(name: "6", minMark: 0, maxMark: 49, gradePoint: 6.0),
     ], type: .NA)],//N(A) levels grades (no grade point)
-    [GradeSystem(name:"N(T)", grades: [
+    .NT:[GradeSystem(name:"N(T)", grades: [
         Grade(name: "A", minMark: 70, maxMark: 100, gradePoint: 1.0),
         Grade(name: "B", minMark: 65, maxMark: 69, gradePoint: 2.0),
         Grade(name: "C", minMark: 60, maxMark: 64, gradePoint: 3.0),
         Grade(name: "D", minMark: 50, maxMark: 59, gradePoint: 4.0),
         Grade(name: "U", minMark: 0, maxMark: 49, gradePoint: 5.0),
     ], type: .NT)],// N(T) levels grades (no grade point)
-    [GradeSystem(name:"O Levels", grades: [
+    .OLevel: [GradeSystem(name:"O Levels", grades: [
         Grade(name: "A1", minMark: 75, maxMark: 100, gradePoint: 1.0),
         Grade(name: "A2", minMark: 70, maxMark: 74, gradePoint: 2.0),
         Grade(name: "B3", minMark: 65, maxMark: 69, gradePoint: 3.0),
@@ -213,7 +224,7 @@ var defaultSystems = [
         Grade(name: "E8", minMark: 40, maxMark: 44, gradePoint: 8.0),
         Grade(name: "F9", minMark: 0, maxMark: 40, gradePoint: 9.0)
     ], type: .OLevel)],// O levels grades (no grade point)
-    [GradeSystem(name: "IB", grades: [
+    .IB:[GradeSystem(name: "IB", grades: [
         Grade(name: "7", minMark: 85, maxMark: 100, gradePoint: 7),
         Grade(name: "6", minMark: 69, maxMark: 85, gradePoint: 6),
         Grade(name: "5", minMark: 56, maxMark: 68, gradePoint: 5),

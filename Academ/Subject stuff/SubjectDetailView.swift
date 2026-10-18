@@ -89,6 +89,7 @@ struct SubjectDetailView: View {
                 if sub.assessments.map({$0.markAttained}).count>0{
                     Section("Subject Trends (%)"){
                         GraphView(sub: sub)
+                            .frame(minHeight: 200)
                     }
                     .lrb(themeSelect)
                 }

@@ -23,13 +23,16 @@ struct GraphView: View {
                 Text("\(sub.name)")
                 Section{
                     Chart(sub.assessments) {
+                        RuleMark(y: .value("Percentage", sub.targetMark))
+                            .foregroundStyle(by: .value("Type", "Goal"))
+                            .zIndex(0)
+                        RuleMark(y: .value("Percentage", sub.currentOverall()))
+                            .foregroundStyle(by: .value("Type", "Overall"))
+                            .zIndex(0)
                         if $0.examDone{
                             LineMark(x: .value("Assessment", $0.name), y: .value("Percentage", $0.percentage))
                                 .foregroundStyle(by: .value("Type", "Marks"))
-                            RuleMark(y: .value("Percentage", sub.targetMark))
-                                .foregroundStyle(by: .value("Type", "Goal"))
-                            RuleMark(y: .value("Percentage", sub.currentOverall()))
-                                .foregroundStyle(by: .value("Type", "Overall"))
+                                .zIndex(1)
                         }
                     }
                 }

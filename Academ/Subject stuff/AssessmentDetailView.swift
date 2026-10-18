@@ -73,7 +73,11 @@ struct AssessmentDetailView: View {
                         })
                             
                     }
-                    
+                    DatePicker(
+                        "Exam Date:",
+                        selection: $assess.examDate,
+                        displayedComponents: [.date]
+                    )
                     
                     Toggle(isOn: $assess.examDone) {
                         Text("Exam done?")
@@ -99,11 +103,7 @@ struct AssessmentDetailView: View {
                             
                         }
                     } else {
-                        DatePicker(
-                            "Exam Date:",
-                            selection: $assess.examDate,
-                            displayedComponents: [.date]
-                        )
+                        
                         OptionalDatePicker(date: $assess.reminder, name: "reminder")
                             .onChange(of: assess.reminder) { _, newValue in
 
